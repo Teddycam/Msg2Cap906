@@ -9,135 +9,32 @@
 table_format = True
 file_output = True
 Excel_output = False
-
+BandsFilter = True
 fgi_out = True
 geran_out = True
 utran_out = True
 utrangeranbinary = False
 R14_enabled = True
 
-# ================
-# Search patterns
-# ================
-
+# VARs
 TMF = False
 eNB = False
+S256DL = False # 256QAM DL for some of use band(s)
+S256UL = False # 256QAM UL for some of use band(s)
+S_4x4 = False # 4 layers for some of use band(s)
+S_8x8 = False # 8 layers for some of use band(s)
+S_CA7C = False # CA 7C support (CA of 2 carriers in Band 7)
+S_Qualcomm = False # Qualcomm's requirement statement value
 
-# Access stratum
-Patt_UEacc = "..accessStratumRelease ---"
-Patt_UEacc_eNB = "accessStratumRelease :  ----"
-
-# LTE UE Categories
-Patt_UEcat = "..ue-Category"
-Patt_UEcat_eNB = "ue-Category"
-# Patt_UEul12 = "..ue-CategoryUL-r12 ---"
-# Patt_UEdl12 = "..ue-CategoryDL-r12 ---"
-# Patt_UEdl13 = "..ue-CategoryDL-v1330"
-
-# Sasha:
-# ue-CategoryDL = [r12:['1','2'], v1330: 23452'']
-
-# Supportet Bands
-Patt_SB = ""
-Patt_SBtmf = "bandEUTRA --- 0x"
-# Patt_SBeNB = "bandEUTRA: ---- 0x"
-# eRAN13.1 renew:
-Patt_SBeNB = "bandEUTRA :  ---- 0x"
-
-Patt_UtraBands = ""
-Patt_UtraBands_tmf = "..SupportedBandUTRA-FDD ---"
-Patt_UtraBands_eNB = "SupportedBandUTRA-FDD :  ----"
-
-Patt_GeRANBands = ""
-Patt_GeRANBands_tmf = "..SupportedBandGERAN ---"
-Patt_GeRANBands_eNB = "SupportedBandGERAN :  ----"
-
-## R12, R1250
-Patt_SBr12 = "SupportedBandEUTRA-v12"
-Patt_SBr1250 = "SupportedBandEUTRA-v1250"
-Patt_ul64 = "ul-64QAM-r12 --- supported"
-Patt_ul64_1250 = "ul-64QAM-r12 :  ---- supported"
-Patt_ul64tmf = "ul-64QAM-r12 --- supported"
-Patt_dl256 = "dl-256QAM-r12 --- supported"
-Patt_dl256_1250 = "dl-256QAM-r12 :  ---- supported"
-Patt_dl256tmf = "dl-256QAM-r12 --- supported"
-
-## R1430+++
-Patt_SBr14 = "supportedBandCombination-v1430"
-# "ul-256QAM-r14 :  ---- supported(00)"
-Patt_ul256r14 = "ul-256QAM"
-
-# FGI
-Patt_FGI8 = ""
-Patt_FGI8_tmf = "..featureGroupIndicators ---"
-Patt_FGI8_eNB = "featureGroupIndicators :  ----"
-
-Patt_FGI9 = ""
-Patt_FGI9_tmf = "..featureGroupIndRel9Add-r9 ---"
-Patt_FGI9_eNB = "featureGroupIndRel9Add-r9 :  ----"
-
-Patt_FGI9a = ""
-Patt_FGI9a_tmf = "..featureGroupIndicators-r9 ---"
-Patt_FGI9a_eNB = "..featureGroupIndRel9Add-r9: ----"
-Patt_EUTRA = "..UE-EUTRA-Capability"
-Patt_EUTRAv9a0 = "..UE-EUTRA-Capability-v9a0-IEs"
-Patt_EUTRA9fdd = "..fdd-Add-UE-EUTRA-Capabilities-r9"
-Patt_EUTRA9tdd = "..tdd-Add-UE-EUTRA-Capabilities-r9"
-
-Patt_FGI10 = ""
-Patt_FGI10_tmf = "..featureGroupIndRel10-r10 ---"
-Patt_FGI10_eNB = "featureGroupIndRel10-r10 :  ----"
-
-Patt_geranCS = ""
-Patt_geranCS_tmf = "..rat-Type --- geran-cs"
-Patt_geranCS_eNB = "rat-Type :  ---- geran-cs"
-
-Patt_geranPS = ""
-Patt_geranPS_tmf = "..rat-Type --- geran-ps"
-Patt_geranPS_eNB = "rat-Type :  ---- geran-ps"
-
-Patt_UTRA = ""
-Patt_UTRA_tmf = "..rat-Type --- utra"
-Patt_UTRA_eNB = "rat-Type :  ---- utra"
-
-Patt_UERATcap = ""
-Patt_UERATcap_tmf = "..ueRATCap ---"
-Patt_UERATcap_eNB = "ueRATCap :  ----"
-
-Patt_BWclassUL = ""
-Patt_BWclassUL_tmf = "..ca-BandwidthClassUL-r10 ---"
-Patt_BWclassUL_eNB = "ca-BandwidthClassUL-r10 :  ----"
-
-Patt_BWclassDL = ""
-Patt_BWclassDL_tmf = "..ca-BandwidthClassDL-r10 ---"
-Patt_BWclassDL_eNB = "ca-BandwidthClassDL-r10 :  ----"
-
-Patt_MIMO = ""
-Patt_MIMO_tmf = "..supportedMIMO-CapabilityDL-r10 --"
-Patt_MIMO_eNB = "supportedMIMO-CapabilityDL-r10 :  ----"
-
-Patt_CC10 = ""
-Patt_CC10_tmf = "..bandEUTRA-r10 --- 0x"
-Patt_CC10_eNB = "bandEUTRA-r10 :  ---- 0x"
-
-Patt_Band10 = ""
-Patt_Band10_tmf = "..bandEUTRA-r10 ---"
-Patt_Band10_eNB = "bandEUTRA-r10 :  ----"
-
-Patt_StartComb = "..supportedBandCombination-r10"
-Patt_StartCombeNB = "supportedBandCombination-r10"
-# Patt_StartComb1270=".. supportedBandCombination-v1270"
-
-Patt_endComb = "..measParameters-v1020"
-Patt_endCombeNB = "measParameters-v1020"
-# Patt_endComb1130= "..measParameters-v1130"
-Patt_bc = "BandCombinationParameters-r10"
-Patt_bc1430 = "BandCombinationParameters-v1430"
+# Bands filters and XLS conclusions base
+PrimaryEUTRABand = 7 # Carrier of LTE band for which "Supported" decision should be made about 256QAM or 4/8 layers supporting
+SecondaryEUTRABands = [3,7,20] # Carriers of LTE Bands, which combinations are supported in MF and lab ERANs for special marked output
 
 # internal DB arrays:
 Bands = []
 CCs = []
 CCsCC = []
+
 # Temporary variables
 temp_int = 0
 temp_str = ""
@@ -156,6 +53,19 @@ FGI8txt = ""
 FGI9txt = ""
 FGI10txt = ""
 
+from  Patterns import *
+import os
+import openpyxl
+import logging
+from openpyxl.styles import Font, Fill  # Подключаем стили для текста
+from openpyxl.styles import colors  # Подключаем цвета для текста и ячеек
+from openpyxl.styles import PatternFill  # Подключаем стили для ячеек
+
+# Настройка  модуля Logging
+formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging.basicConfig(level=logging.INFO, format=formatter)
+logger = logging.getLogger('_Parser')
+logger.setLevel(logging.INFO)
 
 # извлечение числа из строчного значения в скобках вида (25)
 def valfrombrackets(inputstr):
@@ -171,8 +81,54 @@ def valfrombrackets(inputstr):
     if (pos01 >= 0 and pos02 > 0):
         return inputstr[pos01 + 1:pos02]
     else:
+        logger.error('ValFromBrackets cannot find any value in %s:', inputstr)
+        logger.error('Returned None')
         return None
 
+def valfromGSM(inputstr):
+    """
+    This for parse something
+    :param inputstr: this is regular expression
+    :return: INTEGER value of gsm frequency
+    e.g. inputstr = 'SupportedBandGERAN :  ---- gsm900E(7) ---- 00111***'
+    return = 900
+    """
+    aa = ''
+    pos01 = inputstr.find("gsm")
+    pos02 = inputstr.find("(")
+    if (pos01 >= 0 and pos02 > 0):
+        a = inputstr[pos01+3:pos02]
+        for b in range(0, len(a)):
+            if (a[b] in '0123456789'): aa= aa+a[b]
+        if len(a)>0:
+            return int(aa)
+        else:
+            return None
+    else:
+        logger.error('ValFromGSM cannot find any value in %s:', inputstr)
+        logger.error('Returned None')
+        return None
+
+def EndStrFilter(inputstr):
+    """
+    This for parse something
+    :param inputstr: this is regular expression
+    :return: inputstr up to ')' symbol without /n
+    e.g. inputstr = 'ue-Category --- 0x4(4)']'
+    return = 'ue-Category --- 0x4(4)'
+    """
+    pos01 = inputstr.find(")")
+    if (pos01 > 0):
+        a = inputstr[:pos01+1]
+        a = a.rstrip('/n')
+        if len(a)>0:
+            return a
+        else:
+            return ''
+    else:
+        logger.error('EndStrFilter() cannot find any value in %s:', inputstr)
+        logger.error('Returned None')
+        return ''
 
 # Call dialogue box to ask input file with capability_info trace
 # import tkinter as tk
@@ -182,8 +138,6 @@ from prettytable import PrettyTable
 
 t1 = PrettyTable()
 t2 = PrettyTable()
-import os
-import openpyxl
 
 if len(sys.argv) < 2:  # нет параметров
     fn = tkinter.filedialog.askopenfilename()
@@ -198,36 +152,57 @@ if os.path.exists(fn):  # если файл трассировки сущест�
     if ('txt' in ext):
         # Add prefix 'Parsed_' to the input file name for the ouput (parsed) filename (with the same file path)
         fnO = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
+        logging.info('Output text file: %s', fnO)
         s = f.readlines()
         f.close()
     # Should be '.xls','.xlsx','.xlsm'
     elif ('xls' in ext):
         Excel_output = True
+        XLwithmacro = ('.xlsm','.xltm')
+        XLwithoutmacro = ('.xls','.xlsx','.xltx')
+        # меняем логгер на XLS
+        logger = logging.getLogger('XLSproc')
         # Входная трассировка в файле Excel на вкладке Capabilities
-        book = openpyxl.load_workbook('sample.xlsx')
-        # Add prefix 'Parsed_' to the input file name for the ouput (parsed) filename (with the same file path)
-        fnO = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
-        print('Sheets: ', book.sheetnames)
-        if "Capabilities" in book.sheetnames:
-            # Меняем вкладку
-            sheet = book["Capabilities"]
+        logger.info('Open workbook: %s', fn)
+        if (ext in XLwithmacro):
+            book = openpyxl.load_workbook(fn, keep_vba=True)
+        elif (ext in XLwithoutmacro):
+            book = openpyxl.load_workbook(fn)
         else:
-            print('Вкладка Capabilities в таблице не найдена')
+            logging.error('Extension %s is not known', ext)
+            exit(1)
+        # Add prefix 'Parsed_' to the input file name for the ouput (parsed) filename (with the same file path)
+        # Output Text file name
+        # FnameX, extX = os.path.splitext(fn0)
+        # Output XLS file name with the same extension as input file
+        # fnX = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
+        fnX = os.path.splitext(fn)[0]+'_parsed'+ext
+        logging.info('Output XLS file: %s', fnX)
+        # Output TXT file name is the same like input filename, but with '_parsed' suffix and '.txt' extension
+        fnO = os.path.splitext(fn)[0]+'_parsed.txt'
+        logging.info('Output text file: %s', fnO)
+        logger.info('Loading device capabilities from file %s', fn)
+        logger.info('Sheets: %s', book.sheetnames)
+        sheetIn = "Capabilities"
+        sheetOut = "Parsed_Capabilities"
+        if sheetIn in book.sheetnames:
+            # Меняем вкладку
+            sheet = book[sheetIn]
+        else:
+            logger.exception('Вкладка %s в таблице не найдена', sheetIn)
             exit(0)
-        print('Title = ', sheet.title)
+        logger.info('Вкладка %s', sheet.title)
         s = []
         row: object
         for row in sheet.iter_rows():
-            s.append(str([cell.value for cell in row]))
-        # print(s[-3:])
-        # print('s length = ', len(s))
+            for cell in row:
+                if cell.value != None:
+                    s.append(str([cell.value ]).rstrip("'/]"))
     else:
-        print('File type ', ext,' undefined')
+        logger.error('File type %s undefined', ext)
         exit(1)
-
-
 else:  # Файл трассировки не найден
-    print("File ", os.path.splitext(fn)[0]," not found", cwd, ">")
+    logger.error("File %s not found %s >", os.path.splitext(fn)[0], cwd)
     exit
 
 # В дальнейшем вывод производится в заданный файл вывода
@@ -243,11 +218,11 @@ with open(ff, 'w') as fO:
     # print("?", file = fO)
     # fO.close()
     ##
-    print("Трассировка", fn, " содержит ", len(s), " строк")
+    logger.info("Трассировка %s содержит %s строк", fn, len(s))
     print("Трассировка", fn, " содержит ", len(s), " строк", file=fO)
     print("", file=fO)
     ##
-    print('Определим, трассировка декодирована TraceViewer-ом из tmf или самой eNB')
+    logger.info('Определим, трассировка декодирована TraceViewer-ом из tmf или самой eNB')
     cnt_TMF = 0  # Обнуляем счетчик нахождений паттерна TMF
     cnt_eNB = 0  # Обнуляем счетчик нахождений паттерна eNB
     # Перебираем все строки для сбора бэндов EUTRA
@@ -263,6 +238,7 @@ with open(ff, 'w') as fO:
     corr_eNB2 = 0  # Коррекция позиций ueCapabilityRAT для tmf не требуется
     if cnt_TMF > cnt_eNB:
         print("TMF format decided", "[", cnt_TMF, ":", cnt_eNB, "]", file=fO)
+        logger.info("TMF format decided")
         Patt_SB = Patt_SBtmf
         Patt_UtraBands = Patt_UtraBands_tmf
         Patt_GeRANBands = Patt_GeRANBands_tmf
@@ -281,6 +257,7 @@ with open(ff, 'w') as fO:
         TMF = True
         eNB = False
     else:
+        logger.info("eNB format decided")
         print("eNB format decided", "[", cnt_eNB, ":", cnt_TMF, "]", file=fO)
         Patt_SB = Patt_SBeNB
         Patt_UtraBands = Patt_UtraBands_eNB
@@ -308,24 +285,23 @@ with open(ff, 'w') as fO:
     print("\n", file=fO)
 
     ##
-    print('Перебираем все строки для поиска UE Access Stratum')
+    logger.info('Перебираем все строки для поиска UE Access Stratum')
     for i in range(0, len(s)):
         pos = s[i].find(Patt_UEacc)
         if (pos >= 0):
-            #            print (s[i])
-            #            print (s[i][pos+1:])
-            UEaccS.append(s[i][pos:])
+            UEaccS.append(EndStrFilter(s[i][pos:]))
     print("Найденные 3gpp Access Stratum:", len(UEaccS), file=fO)
     print("=================================", file=fO)
     for i in range(0, len(UEaccS)):
         print(UEaccS[i], end='', file=fO)
     print("\n", file=fO)
+
     ##
-    print('Перебираем все строки для сбора категорий')
+    logger.info('Перебираем все строки для сбора категорий')
     for i in range(0, len(s)):
         pos = s[i].find(Patt_UEcat)
         if (pos >= 0):
-            UEcats.append(s[i][pos + 2:])
+            UEcats.append(EndStrFilter(s[i][pos + 2:]))
     print("Найденные категории LTE:", len(UEcats), file=fO)
     print("=================================", file=fO)
 
@@ -333,7 +309,7 @@ with open(ff, 'w') as fO:
     S_UEcatUL = []
     S_UEcatDL = []
     for i in range(0, len(UEcats)):
-        print(UEcats[i], end='', file=fO)
+        print(UEcats[i], end='\n', file=fO)
         if 'DL' in UEcats[i]:
             S_UEcatDL.append(int(valfrombrackets(UEcats[i])))
         elif 'UL' in UEcats[i]:
@@ -344,16 +320,16 @@ with open(ff, 'w') as fO:
     S_UEcat.sort()
     S_UEcatDL.sort()
     S_UEcatUL.sort()
-    print('LTE Categories: ', S_UEcat)
-    print('LTE DL Categories: ', S_UEcatDL)
-    print('LTE UL Categories: ', S_UEcatUL)
+    logger.info('LTE Categories: %s', S_UEcat)
+    logger.info('LTE DL Categories: %s', S_UEcatDL)
+    logger.info('LTE UL Categories: %s', S_UEcatUL)
 
     ##
-    print('Обнуляем начальное значение несущих EUTRA')
+    logger.info('Обнуляем начальное значение несущих EUTRA')
     S_EUTRA = [] #  номера LTE bands
     nb = 0
     ##
-    print('Перебираем все строки для сбора бэндов EUTRA')
+    logger.info('Перебираем все строки для сбора бэндов EUTRA')
     for i in range(0, len(s)):
         pos = s[i].find(Patt_SB)
         if (pos >= 0):
@@ -363,7 +339,7 @@ with open(ff, 'w') as fO:
             Bands[nb][0] = int(valfrombrackets(s[i][pos + 15:]))
             nb += 1
     S_EUTRA.sort()
-    print('LTE bands: ', S_EUTRA)
+    logger.info('LTE bands: %s', S_EUTRA)
 
     NumSBr12 = -1  # инициируем переменную количества бэндов с расширением для R12 значением -1 чтобы она могла быть индексом бэнда
     SBr12Found = False  # инициируем переменную наличия блока расширения для R12 значением False
@@ -389,15 +365,18 @@ with open(ff, 'w') as fO:
             if ((Patt_dl in s[i + 1]) or (Patt_dl in s[i + 2])):
                  eUtraBands[NumSBr12] = eUtraBands[NumSBr12] + " 256QAM DL"
                  Bands[NumSBr12][1] = 8  # bits
+#                if (Bands[NumSBr12][0] = PrimaryEUTRABand)
+                 if (Bands[NumSBr12][0] in (PrimaryEUTRABand, SecondaryEUTRABands)):
+                    S256DL = True #256QAM for DL of some used bands (primary or secondary)
             else:
                 eUtraBands[NumSBr12] = eUtraBands[NumSBr12] + " 64QAM  DL"
                 Bands[NumSBr12][1] = 6  # bits
             #   Поиск UL64
             if ((s[i + 1].find(Patt_ul) >= 0) or (s[i + 2].find(Patt_ul) >= 0)):
-                eUtraBands[NumSBr12] = eUtraBands[NumSBr12] + " 64QAM UL \n"
+                eUtraBands[NumSBr12] = eUtraBands[NumSBr12] + " 64QAM UL"
                 Bands[NumSBr12][2] = 6  # bits
             else:
-                eUtraBands[NumSBr12] + eUtraBands[NumSBr12] + " 16QAM UL \n"
+                eUtraBands[NumSBr12] + eUtraBands[NumSBr12] + " 16QAM UL"
                 Bands[NumSBr12][2] = 4  # bits
     print("\n", file=fO)
 
@@ -415,35 +394,39 @@ with open(ff, 'w') as fO:
     print("\n", file=fO)
     ##
     S_UTRA = []
-    print('Перебираем все строки для сбора бэндов UTRA')
+    logger.info('Перебираем все строки для сбора бэндов UTRA')
     for i in range(0, len(s)):
         pos = s[i].find(Patt_UtraBands)
         if (pos >= 0):
-            UtraBands.append(s[i][pos + 28:])
-            S_UTRA.append(int(valfrombrackets(s[i][pos + 28:])))
+            UtraBands.append(EndStrFilter(s[i][pos + 28:]))
+            S_UTRA.append(int(valfrombrackets(s[i][pos + 28:]))+1)
     print("Найденные UTRA bands:", len(UtraBands), file=fO)
     print("========================", file = fO)
     for i in range(0, len(UtraBands)):
-        print(UtraBands[i], end='', file=fO)
+        print(UtraBands[i], end='\n', file=fO)
     print("\n", file=fO)
     S_UTRA.sort()
+    logger.info('UTRA bands: %s', S_UTRA)
 
     # Перебираем все строки для сбора бэндов GERAN
     S_GERAN = []
     for i in range(0, len(s)):
         pos = s[i].find(Patt_GeRANBands)
         if (pos >= 0):
-            GeRANBands.append(s[i][pos + 25:])
-            S_GERAN.append(int(valfrombrackets(s[i][pos + 25:])))
+            # GeRANBands.append(s[i][pos + 25:])
+            GeRANBands.append(valfromGSM(s[i]))
+            S_GERAN.append(valfromGSM(s[i]))
     print("Найденные GeRAN bands:", len(GeRANBands), file=fO)
     print("========================", file = fO)
     for i in range(0, len(GeRANBands)):
-        print(GeRANBands[i], end='', file=fO)
+        print(GeRANBands[i], end='\n', file=fO)
     print("\n", file=fO)
     S_GERAN.sort()
+    logger.info('GERAN bands: %s', S_GERAN)
 
     if fgi_out:
         # Поиск FGI r8
+        logger.info('Поиск FGI r9')
         for i in range(0, len(s)):
             pos = s[i].find(Patt_FGI8)
             if (pos >= 0):
@@ -455,9 +438,10 @@ with open(ff, 'w') as fO:
                     print("FGI r8: ", FGI8Txt, file=fO)
                 else:
                     print("No FGI r8 found", file=fO)
+                    logger.warning("No FGI r8 found")
         print("\n", file=fO)
         ##
-        print('Поиск FGI r9')
+        logger.info('Поиск FGI r9')
         for i in range(0, len(s)):
             pos = s[i].find(Patt_FGI9)
             if (pos >= 0):
@@ -469,9 +453,10 @@ with open(ff, 'w') as fO:
                     print("FGI r9: ", FGI9Txt, file=fO)
                 else:
                     print("No FGI r9 found", file=fO)
+                    logger.warning("No FGI r9 found")
         print("\n", file=fO)
         ##
-        print('Поиск FGI r10')
+        logger.info('Поиск FGI r10')
         for i in range(0, len(s)):
             pos = s[i].find(Patt_FGI10)
             if (pos >= 0):
@@ -483,14 +468,15 @@ with open(ff, 'w') as fO:
                     print("FGI r10:", FGI10Txt, file=fO)
                 else:
                     print("No FGI r10 found", file=fO)
+                    logger.warning("No FGI r10 found")
         print("\n", file=fO)
     ##
-    print('Поиск капабилити 2g/3g')
+    logger.info('Поиск капабилити 2g/3g')
     geranPS_pos = len(s)  # по умолчанию начало блоков GeRAN PS/CS//UTRAN = последней строке
     geranCS_pos = len(s)
     UTRAN_pos = len(s)
     ##
-    print('Пытаемся найти истинные начала блоков GeRAN PS/CS//UTRAN')
+    logger.info('Пытаемся найти истинные начала блоков GeRAN PS/CS//UTRAN')
     for i in range(0, len(s)):
         pos = s[i].find(Patt_geranPS)
         if (pos >= 0):
@@ -508,15 +494,18 @@ with open(ff, 'w') as fO:
             break
     if geranPS_pos == len(s):
         print("geranPS block is absent", file=fO)
+        logger.error("geranPS block is absent")
     if geranCS_pos == len(s):
         print("geranCS block is absent", file=fO)
+        logger.error("geranCS block is absent")
     if UTRAN_pos == len(s):
         print("UTRAN   block is absent", file=fO)
+        logger.error("UTRAN   block is absent")
     # упорядочиваем блоки
     smin = min(geranPS_pos, geranCS_pos, UTRAN_pos)
     smax = max(geranPS_pos, geranCS_pos, UTRAN_pos)
     ##
-    print('Ищем строку капабилити в блоке UTRAN')
+    logger.info('Ищем строку капабилити в блоке UTRAN')
     if utran_out and UTRAN_pos < len(s):
         if UTRAN_pos == smax:
             k = len(s)
@@ -557,7 +546,7 @@ with open(ff, 'w') as fO:
                 print("\n", file=fO)
         print("\n", file=fO)
     ##
-    print('Поиск капабилити для GeranPS')
+    logger.info('Поиск капабилити для GeranPS')
     if geran_out and (geranPS_pos < len(s)):
         if geranPS_pos == smax:
             k = len(s)
@@ -573,7 +562,7 @@ with open(ff, 'w') as fO:
                 k = geranCS_pos
                 print("<geranPS block is 1st, geranCS is 2nd>", file=fO)
         ##
-        print('Ищем строку капабилити в блоке geranPS')
+        logger.info('Ищем строку капабилити в блоке geranPS')
         for i in range(geranPS_pos, k):
             pos2 = s[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
@@ -603,7 +592,7 @@ with open(ff, 'w') as fO:
                     print("\n", file=fO)
         print("\n", file=fO)
 
-    print('Поиск капабилити для GeranCS')
+    logger.info('Поиск капабилити для GeranCS')
     if geran_out and geranCS_pos < len(s):
         if geranCS_pos == smax:
             k = len(s)
@@ -619,7 +608,7 @@ with open(ff, 'w') as fO:
                 k = geranPS_pos
                 print("<geranCS block is 1st, geranPS is 2nd>", file=fO)
             ##
-        print('Ищем строку капабилити в блоке geranCS')
+        logger.info('Ищем строку капабилити в блоке geranCS')
         for i in range(geranCS_pos, k):
             pos2 = s[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
@@ -663,18 +652,20 @@ with open(ff, 'w') as fO:
             else:
                 CCr14Mod.append(None)
     print("\n", file=fO)
+    if CCr14Found:
+        logger.info('Найдена поддержка компонент с UL256QAM r14.3')
 
-    print('Поиск начала блока комбинаций несущих r10')
+    logger.info('Поиск начала блока комбинаций несущих r10')
     i = 0
     while (i < len(s) and s[i].find(Patt_StartComb) < 0):
         i += 1
     Comb_Start = i
-    print('Поиск конца блока комбинаций несущих r10')
+    logger.info('Поиск конца блока комбинаций несущих r10')
     while (i < len(s) and s[i].find(Patt_endComb) < 0):
         i += 1
     Comb_End = i
     if (Comb_End > Comb_Start):
-        print('Перебираем ВСЕ строки блока комбинаций несущих')
+        logger.info('Перебираем ВСЕ строки блока комбинаций несущих')
         NCCs = 0
         Ncarr = 0
         for i in range(Comb_Start, Comb_End + 1):
@@ -725,9 +716,13 @@ with open(ff, 'w') as fO:
                     if (temp_int == 0):
                         CCs[Ncarr - 1][6] = 2
                     elif (temp_int == 1):
-                        CCs[Ncarr - 1][6] = 4
+                        CCs[Ncarr - 1][6] = 4 # 4 layers
+                        if (CCs[Ncarr-1][1] in (PrimaryEUTRABand,SecondaryEUTRABands)):
+                            S_4x4 = True
                     elif (temp_int == 2):
-                        CCs[Ncarr - 1][6] = 8
+                        CCs[Ncarr - 1][6] = 8 # 8 layers
+                        if (CCs[Ncarr - 1][2] in (PrimaryEUTRABand, SecondaryEUTRABands)):
+                            S_8x8 = True  # 8 layers for some of use band(s)
                     if (CCs[Ncarr - 1][1] > 32) & (CCs[Ncarr - 1][1] < 49):  # TDD ULDL_config#3 (DL/UL=6/3): DL = 0.6*0.625=0.375 | UL = 0.3*0.625 = 0.1875
                         IsFDD = False
                         CCs[Ncarr - 1][9] = int(
@@ -746,24 +741,21 @@ with open(ff, 'w') as fO:
             nccUL_r14=0 # обнуляем номер UL компоненты для добавки данных UL модуляций R1430
             #Вносим коррекции в UL при наличии блока UL 256QAM R14 и включенного свитча обработки R14
             if (R14_enabled and CCr14Found):
-                print('Обрабатываем расширение модуляций для R14')
+                logger.info('Обрабатываем расширение модуляций для R14')
                 for l in range(Ncarr):
-                    # print('l=', l)
-                    # print('Val= ', CCs[l][0])
-                    # print('nCCUL_r14 = ', nccUL_r14)
-                    # l2 = CCs[l][0]-1 # Номер комбинации, в которую входит компонентная несущая -1 = индекс для массива R14 UL 256QAM
-                    # print('l2=', l2)
-                    # if nccUL_r14 < len(CCr14Mod):
-                    #     print('Val14=',CCr14Mod[nccUL_r14])
-
                     # если у текущей компоненты UL активен (имеет не менее 1 пространственного канала)
                     # и для этой комбинации разрешен 256QAM UL (не None)
                     if (CCs[l][5]>0 and CCr14Mod[nccUL_r14]>0):
                         CCs[l][3] = CCr14Mod[nccUL_r14]
                         CCs[l][10] = int(0.625 * CCs[l][3] * CCs[l][5] * CCs[l][8])
                         nccUL_r14 += 1
+                        if CCs[l][2] in (PrimaryEUTRABand, SecondaryEUTRABands):
+                            S256UL = True
+            if CCr14Found:
+                logger.info('Найдено %s компонент с UL 256QAM',nccUL_r14)
             ##
-            print('Создаем список комбинаций ')
+
+            logger.info('Создаем список комбинаций ')
             for i in range(NCCs):  # комбинации
                 # заполняем список комбинаций суммами компонентных несущих
                 CCsCC.append([i + 1, 0, 0])
@@ -782,7 +774,7 @@ with open(ff, 'w') as fO:
             if not (table_format):
                 print("================================", file=fO)
             ##
-            print('Вывод всех комбинаций')
+            logger.info('Вывод всех комбинаций')
             for i in range(NCCs):
                 if not (table_format):
                     print(CCsCC[i][0], "\t", CCsCC[i][1], "\t\t", CCsCC[i][2], end="\n", file=fO)
@@ -794,7 +786,7 @@ with open(ff, 'w') as fO:
         #        print("\n",file = fO)
 
         ##
-        print('Вывод списка компонентных несущих')
+        logger.info('Вывод списка компонентных несущих')
         if Ncarr > 0:
             print("Найдено ", Ncarr, " компонентов несущих:", file=fO)
             print("Для TDD расчет ожидаемой скорости выполняется для конфигурации TDD #3 (6DL/3UL таймслотов)", file=fO)
@@ -812,6 +804,9 @@ with open(ff, 'w') as fO:
 
             prevComb = 1
             for i in range(Ncarr):  # компоненты 0...Ncarr-1
+                # Ищем S_CA7C
+                if ((CCs[i][1] == 7) and (CCs[i][4] == 2)):
+                    S_CA7C = True
                 if CCs[i][0] > prevComb:  # если текущая комбинация увеличилась
                     temp_int = CCs[i][0] - 1  # комбинация = прошлая, выведем для нее суммарные скорости:
                     if table_format:
@@ -848,9 +843,97 @@ with open(ff, 'w') as fO:
             if table_format:
                 print(t2, file=fO)
             print("\n", file=fO)
-            #            print ("UE Capabilities parsing finished",file = fO)
-            print("UE Capabilities parsing finished")
-            print("\n", file=fO)
+            logger.info("UE Capabilities parsing finished")
+            if Excel_output:
+                logger = logging.getLogger('XLSproc')
+                if "Parsed_Capabilities" not in book.sheetnames:
+                    # Add new sheet, fill it and save book copy with new sheet
+                    ws1 = book.create_sheet("Parsed_Capabilities")  # insert sheet at the end (by default)
+                    logging.info('Вкладка Cap.Info создана')
+                else:
+                    logging.info('Вкладка Cap.Info уже существует')
+                sheet = book["Parsed_Capabilities"]
+                sheet.sheet_properties.tabColor = "1072BA"
+                sheet['A2'] = 'LTE category DL+UL'
+                sheet['B2'] = str(S_UEcat)
+                sheet['A3'] = 'LTE category DL'
+                sheet['B3'] = str(S_UEcatDL)
+                sheet['A4'] = 'LTE category UL'
+                sheet['B4'] = str(S_UEcatUL)
+                sheet['A5'] = 'EUTRA_Bands'
+                sheet['B5'] = str(S_EUTRA)
+                sheet['A6'] = 'UTRA_Bands'
+                sheet['B6'] = str(S_UTRA)
+                sheet['A7'] = 'GeRAN_Bands'
+                sheet['B7'] = str(S_GERAN)
+                sheet['A8'] = '256QAM for used bands'
+                if S256DL and S256UL:
+                    sheet['B8'] = 'DL + UL'
+                else:
+                    if S256DL:
+                        sheet['B8'] = 'DL'
+                    elif S256UL:
+                        sheet['B8'] = 'UL'
+                    else:
+                        sheet['B8'] = ''
+                currentcell = sheet['B8']
+                currentcell.font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['A9'] = 'MIMO 4x4 for used bands'
+                if S_4x4:
+                    sheet['B9'] = 'Supported'
+                else:
+                    sheet['B9'] = 'Not Supported'
+                currentcell = sheet['B9']
+                currentcell.font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['A10'] = 'CA 7c, 256 QAM, MIMO 4x4'
+                S_Qualcomm = (((S256DL or S256UL) and S_4x4) and S_CA7C)
+                if S_Qualcomm:
+                    sheet['B10'] = 'Supported'
+                else:
+                    sheet['B10'] = 'Not Supported'
+                currentcell = sheet['B10']
+                currentcell.font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                ij = 15
+                sheet.cell(row=ij, column=1, value='UE access stratum : '+str(UEaccS))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='UE categories : '+str(UEcats))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='FGI r8 = '+str(FGI8Txt))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='FGIr9 = '+str(FGI9Txt))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='FGIr10 = '+str(FGI10Txt))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='UTRAN capabilities : '+str(UTRANcapTxt))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='GERAN CS capabilities : '+str(GeranCScapTxt))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='GERAN PS capabilities : '+str(GeranPScapTxt))
+                ij+=1
+                sheet.cell(row=ij, column=1, value='CA Combinations : ')
+                currentcell = sheet.cell(row=ij,column=1)
+                currentcell.font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                ij+=1
+                Menu = ['Comb#', 'Band', 'DLbits', 'ULbits', 'DL#', 'UL#', 'MIMO', 'DL bandwith', 'UL bandwith',
+                 'DL Throughput', 'UL Throughput']
+                for i in range (11):
+                    sheet.cell(row=ij, column=i+1, value= Menu[i])
+                    currentcell = sheet.cell(row=ij,column=i+1)
+                    currentcell.font = Font(size=12, underline='none', color=colors.YELLOW, bold=True, italic=False)
+                    currentcell.fill = PatternFill(fill_type='solid', start_color=colors.DARKBLUE,
+                                                     end_color=colors.DARKBLUE)
+                ij+=1
+                for i in range(Ncarr):
+                    for j in range(11):
+                        sheet.cell(row=ij+i, column=j+1, value=CCs[i][j])
+                        # currentcell = sheet.cell(row=ij+i, column=j+1)
+                        # currentcell.font = Font(size=10, underline='none', color=colors.DARKBLUE, bold=False, italic=True)
+                        sheet.cell(row=ij + i, column=j + 1).font = Font(size=10, underline='none', color=colors.DARKBLUE, bold=False, italic=True)
+                logging.info('Вкладка Cap.Info заполнена')
+                book.save(fnX)
+                # book.save('fnX')
+                book.save('LatestParsed'+ext)
+                logging.info('Копия файла сохранена в файле %s', fnX)
     else:
         print("CC combinations not found", file=fO)
-        print("CC combinations not found")
+        logger.warning("CC combinations not found")
