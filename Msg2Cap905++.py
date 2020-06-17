@@ -9,9 +9,7 @@ from openpyxl.styles import Font, Fill  # Подключаем стили для
 from openpyxl.styles import colors  # Подключаем цвета для текста и ячеек
 from openpyxl.styles import PatternFill  # Подключаем стили для ячеек
 
-# ================
-# Flags (switches)
-# ================
+# Switches
 table_format = True
 file_output = True
 Excel_output = False
@@ -19,7 +17,7 @@ BandsFilter = True
 fgi_out = True
 geran_out = True
 utran_out = True
-utrangeranbinary = False
+utrangeranbinary = True
 R14_enabled = True
 
 # VARs
@@ -59,7 +57,6 @@ FGI8txt = ""
 FGI9txt = ""
 FGI10txt = ""
 
-
 # Настройка  модуля Logging
 formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(level=logging.INFO, format=formatter)
@@ -83,6 +80,26 @@ def valfrombrackets(inputstr):
         logger.error('ValFromBrackets cannot find any value in %s:', inputstr)
         logger.error('Returned None')
         return None
+
+def valFGIfromquotes(inputstr):
+    """
+    This for parse something
+    :param inputstr: this is regular expression
+    :return: string value without quotes
+    e.g. inputstr = "'bla vla'"
+    return = 'bla vla'
+    """
+    pos01 = inputstr.find("\'")
+    if pos01 <0:
+        pos01 = 0
+    pos02 = inputstr[pos01+1:].find("\'")
+    if (pos01 >= 0 and pos02 == 32):
+        return inputstr[pos01 + 1:pos01+33]
+    else:
+        logger.error('ValFromQuotes cannot find any value in %s:', inputstr)
+        logger.error('Returned None')
+        return ''
+
 
 def valfromGSM(inputstr):
     """
@@ -129,20 +146,21 @@ def EndStrFilter(inputstr):
         logger.error('Returned None')
         return ''
 
-def  FillCellSum(r,c,v,ws):
+def  FillCellSum(r,c,v,ws,clr):
     """
     This for fill cell [r][c] of worksheet ws with style for SUM  
     :param ws: worksheet
             r: raw
             c: column
-            v: Value for cell 
+            v: Value for cell
+            clr: color of fill
     :return: filled worksheet 
     e.g. FillCellSum (RowInSheet+i, j+1, SumComb[j], sheet)
     return = worksheet with with filled cells
     """
     ws.cell(row=r, column=c, value=v)
-    ws.cell(row=r, column=c).font = Font(size=12, underline='single', color=colors.DARKRED, bold=True, italic=True)
-    ws.cell(row=r, column=c).fill = PatternFill(fill_type='solid', start_color=colors.YELLOW, end_color=colors.YELLOW)
+    ws.cell(row=r, column=c).font = Font(name=FSimple,size=12, underline='single', color=colors.DARKRED, bold=True, italic=True)
+    ws.cell(row=r, column=c).fill = PatternFill(fill_type='solid', start_color=clrCC , end_color=clrCC)
     return ws
 
 def  FillCellNorm(r,c,v,ws):
@@ -157,7 +175,7 @@ def  FillCellNorm(r,c,v,ws):
     return = worksheet with filled cells
     """
     ws.cell(row=r, column=c, value=v)
-    ws.cell(row=r, column=c).font = Font(size=10, underline='none', color=colors.DARKBLUE, bold=False, italic=True)
+    ws.cell(row=r, column=c).font = Font(name=FSimple,size=10, underline='none', color=colors.DARKBLUE, bold=False, italic=True)
     return ws
 
 def CollectPatt(Slist, Patt, corr):
@@ -177,6 +195,18 @@ def CollectPatt(Slist, Patt, corr):
             Flist.append(EndStrFilter(s[i][pos + corr:]).replace('-',''))
     return Flist
 
+def CheckCCCinUsed(cc, UPat):
+    """
+    This for check, is cc in Used  bands ccs Patterns or not
+    :param  cc   : string of ccs in combination like '3172'  for compare to possible used patterns
+            Upat : array of string wuth used patterns of bands and cc# like ['3172','3272201]
+    :return: Boolean (is ccs in Used Pat or not)
+    e.g. CCCinUsed = CheckCCCinUsed(CCC[i], UsedPat)
+    """
+    cciu = False
+    for i5 in UPat:
+        cciu = cciu or (cc == i5)
+    return cciu
 
 def Conv2Bits(Captxt):
     """
@@ -199,22 +229,24 @@ def Conv2Bits(Captxt):
     return CapBits
 
 
-def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr, geranoutSw, utranoutSW):
+def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, utranoutSW):
     """
     This for collect founded in the Slist Patt values to Flist
     :param  Slist: input list of Str
-            geranPS: search pattern for geranPS
-            geranCS: search pattern for geranCS
-            UERATcap: search pattern for UERATcap
-            corr: corr_eNB2, position correction
+            geranPS: search pattern for geranPS caps
+            geranCS: search pattern for geranCS caps
+            UTRA: search pattern for UTRAN caps
+            corr: corr_eNB_GU, Geran/UTRAN capabilities position correction for eNB
     Int.vars: smin,smax, pos, pos2, pos3, geranPS_pos, geranCS_pos, UTRAN_pos:int
     :return: Flist: list of collected values
-    e.g. GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr_eNB2, geran_out, utran_out)
+    e.g. GERAN_UTRAN_Capabilities(s, Patt_geranPS, Patt_geranCS, Patt_UERATcap, corr_eNB_GU, geran_out, utran_out)
     return = tuple  of collected values [GeranPStxt, GeranCStxt, UTRANtxt]
     """
 # изначально примем начало блоков GeRAN PS/CS//UTRAN = последней строке трассировки
     UTRAN_pos = geranCS_pos = geranPS_pos = len(Slist)
     logger.info('Пытаемся найти истинные начала блоков GeRAN PS/CS//UTRAN')
+    # Init returned values by 'Unknown;
+    GeranPStxt = GeranCStxt = UTRANtxt = 'Unknown'
 
     for i in range(0, len(Slist)):
         pos = Slist[i].find(geranPS)
@@ -233,7 +265,7 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr, geranoutSw
         logger.warning("geranCS block is absent")
 
     for i in range(0, len(Slist)):
-        pos = Slist[i].find(UERATcap)
+        pos = Slist[i].find(UTRA)
         if (pos >= 0):
             UTRAN_pos = i
             break
@@ -246,7 +278,7 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr, geranoutSw
     ##
     logger.info('Ищем строку капабилити в блоке UTRAN')
 
-    if utranoutSW and UTRAN_pos < len(Slist): #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    if (utranoutSW and (UTRAN_pos < len(Slist))):
         if UTRAN_pos == smax:
             k = len(Slist)
             logger.info("<UTRAN block is 3rd>")
@@ -260,42 +292,23 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr, geranoutSw
             else:
                 k = geranPS_pos
                 logger.info("<UTRAN block is 1st, geranPS is 2nd>")
-
-        for i in range(UTRAN_pos, k):
-            pos2 = Slist[i].find(UERATcap)  # позиция начала паттерна в строке
+        endsearch = min(k+1, len(Slist))
+        for i in range(UTRAN_pos, endsearch):
+            pos2 = Slist[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
-                pos3 = Slist[i].find(" (")  # позиция конца паттерна в строке
-                if pos3 == None:
-                    UTRANtxt = Slist[i][pos + 19 + corr:]
+                pos3 = Slist[i][pos2+17+corr:].find(" --")  # позиция конца паттерна в строке ***************************************************
+                # pos3 = Slist[i].find(" (")  # позиция конца паттерна в строке
+                if pos3 < 0:
+                    UTRANtxt = Slist[i][pos2+17+corr:]
+                    utrangeranbinary = False
+                    Stail = s[i][-20:]
+                    logger.warning('2g/3g capabilities binary output disabled due to UTRAN capabilities unqualified, tail is %s', Stail)
                 else:
-                    UTRANtxt = Slist[i][pos + 19 + corr:pos3]
-
-
-
-        # print("UTRAN capabilities: \n =0x", UTRANcaptxt, sep='', file=fO) #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-        # if utrangeranbinary:
-        #     UTRANcapBits = Conv2Bits(UTRANcaptxt)
-
-#            bits = 4 * len(UTRANcaptxt)
-#           if (len(UTRANcaptxt) > 1):
-#                UTRANcapBytes = bytes.fromhex(UTRANcaptxt)
-#                print("\nBinary = ", end='', file=fO) #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#                UTRANcapBits = []
-#                n = int.from_bytes(UTRANcapBytes, byteorder='big', signed=False)
-#                for i in (range(bits - 1, 0, -1)):
-#                    if ((2 ** i & n) > 0):
-#                        UTRANcapBits.append("1")
-#                    else:
-#                        UTRANcapBits.append("0")
-##############################################################################################
-        #         for i in range(0, bits - 1):
-        #             print(UTRANcapBits[i], file=fO)#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        #         print("\n", file=fO)
-        # print("\n", file=fO)
-
+                    UTRANtxt = Slist[i][pos2+17+corr: pos2+17+pos3+corr]
+                break
+     ##
     logger.info('Поиск капабилити для GeranPS')
-    if geranoutSw and (geranPS_pos < len(Slist)): #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    if geranoutSw and (geranPS_pos < len(Slist)):
         if geranPS_pos == smax:
             k = len(Slist)
             logger.info("<geranPS block is 3rd>")
@@ -312,49 +325,28 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr, geranoutSw
 
         ##
         logger.info('Ищем строку капабилити в блоке geranPS')
-        for i in range(geranPS_pos, k):
-            pos2 = Slist[i].find(UERATcap)  # позиция начала паттерна в строке
+        endsearch = min(k + 1, len(Slist))
+        for i in range(geranPS_pos, endsearch):
+            pos2 = Slist[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
-                pos3 = Slist[i].find(" (")
-                if pos3 == None:
-                    GeranPStxt = Slist[i][pos + 19 + corr:]
+                pos3 = Slist[i][pos2+17+corr:].find(" ---- ")  # позиция конца паттерна в строке *************************************************************
+                if pos3 < 0:
+                    GeranPStxt = Slist[i][pos2+17+corr:]
+                    utrangeranbinary = False
+                    Stail = s[i][-20:]
+                    logger.warning('2g/3g capabilities binary output disabled due to GeranPS capabilities unqualified, tail is %s', Stail)
                 else:
-                    GeranPStxt = Slist[i][pos + 19 + corr:pos3]
-
-
-        # if (len(GeranPStxt) > 1):
-        #     print("\nGERAN PS capabilities: \n =0x", GeranPStxt, sep='', file=fO)#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#  в отдельную функцию >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-#                 if utrangeranbinary:
-#                     GeranPScapBits = Conv2Bits(GeranPStxt)
-                    # bits = 4 * len(GeranPStxt)
-                    # GeranPScapBytes = bytes.fromhex(GeranPStxt)
-                    # if (len(GeranPStxt) > 1):
-                    #     # print("\nGERAN PS capabilities: \n =0x", GeranPStxt, sep='', file=fO)
-                    #     ## print(GeranPScapBytes,file = fO)
-                    #     GeranPScapBits = []
-                    #     n = int.from_bytes(GeranPScapBytes, byteorder='big', signed=False)
-                    #     for i in (range(bits - 1, 0, -1)):
-                    #         if ((2 ** i & n) > 0):
-                    #             GeranPScapBits.append("1")
-                    #         else:
-                    #             GeranPScapBits.append("0")
-    #####################################################################################
-#                 print("\nBinary = ", end='', file=fO)
-#                 for i in range(0, bits - 1):
-#                     print(GeranPScapBits[i], end='', file=fO)
-#                 print("\n", file=fO)
-# print("\n", file=fO)
-
+                    GeranPStxt = Slist[i][pos2+17+corr:pos2+17+pos3+corr]
+                break
+    ##
     logger.info('Поиск капабилити для GeranCS')
     if geran_out and geranCS_pos < len(s):
         if geranCS_pos == smax:
             k = len(s)
-            print("<geranCS block is 3rd>", file=fO)
+            logger.info("<geranCS block is 3rd>")
         elif geranCS_pos in range(smin + 1, smax):
             k = smax
-            print("<geranCS block is 2nd>", file=fO)
+            logger.info("<geranCS block is 2nd>")
         else:  # geranCS_pos == smin
             if geranPS_pos > UTRAN_pos:
                 k = UTRAN_pos
@@ -364,15 +356,20 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr, geranoutSw
                 logger.info("<geranCS block is 1st, geranPS is 2nd>")
             ##
         logger.info('Ищем строку капабилити в блоке geranCS')
-        for i in range(geranCS_pos, k):
+        endsearch = min(k + 1, len(Slist))
+        for i in range(geranCS_pos, endsearch):
             pos2 = Slist[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
-                pos3 = Slist[i].find(" (")  # позиция конца паттерна в строке
-                if pos3 == None:
-                    GeranCStxt = Slist[i][pos + 19 + corr:]
+                pos3 = Slist[i][pos2+17+corr:].find(" ---- ")  # позиция конца паттерна в строке *************************************************************
+                if pos3 < 0:
+                    GeranCStxt = Slist[i][pos2+17+corr:]
+                    utrangeranbinary = False
+                    Stail = s[i][-20:]
+                    logger.warning('2g/3g capabilities binary output disabled due to GeranCS capabilities unqualified, tail is %s', Stail)
                 else:
-                    GeranCStxt = Slist[i][pos + 19 + corr:pos3]
-    return [GeranCStxt, GeranPStxt, UTRANtxt]
+                    GeranCStxt = Slist[i][pos2+17+corr:pos2+17+pos3+corr]
+                break
+    return [GeranPStxt, GeranCStxt, UTRANtxt]
 
 #----------------------------------------------------------------------------------------------------------------------
 #---------------------------------- M A I N ---------------------------------------------------------------------------
@@ -446,9 +443,8 @@ else:  # Файл трассировки не найден
     logger.error("File %s not found %s >", os.path.splitext(fn)[0], cwd)
     exit
 
-# В дальнейшем вывод производится в заданный файл вывода
-# ( стандартный вывод на экран или в файл на диске)+++ или в файл Excel
-if file_output:  # <================================================================================================
+# В дальнейшем вывод производится в заданный файл вывода (стандартный вывод на экран или в текстовый файл на диске)+++ или в файл Excel
+if file_output:  # <===================================================================================================================
     ff = fnO
 else:
     ff = sys.stdout
@@ -457,7 +453,6 @@ with open(ff, 'w') as fO:
     # fO = open(fnO, 'w')
     # print("?", file = fO)
     # fO.close()
-    ##
     logger.info("Трассировка %s содержит %s строк", fn, len(s))
     print("Трассировка", fn, " содержит ", len(s), " строк", file=fO)
     print("", file=fO)
@@ -474,10 +469,10 @@ with open(ff, 'w') as fO:
             pos = s[i].find(Patt_SBeNB)
             if (pos >= 0):
                 cnt_eNB += 1
-    corr_eNB = 0  # Коррекция позиции  FGI для tmf не требуется
-    corr_eNB2 = 0  # Коррекция позиций ueCapabilityRAT для tmf не требуется
+    corr_eNB_FGI = 0  # Коррекция позиции  FGI для tmf не требуется
+    corr_eNB_GU = 0  # Коррекция позиций ueCapabilityRAT для tmf не требуется
     if cnt_TMF > cnt_eNB:
-        print("TMF format decided", "[", cnt_TMF, ":", cnt_eNB, "]", file=fO)
+        logger.info("TMF format decided [%s : %s]", cnt_TMF, cnt_eNB)
         logger.info("TMF format decided")
         Patt_SB = Patt_SBtmf
         Patt_UtraBands = Patt_UtraBands_tmf
@@ -498,7 +493,7 @@ with open(ff, 'w') as fO:
         eNB = False
     else:
         logger.info("eNB format decided")
-        print("eNB format decided", "[", cnt_eNB, ":", cnt_TMF, "]", file=fO)
+        logger.info("eNB format decided [%s : %s]", cnt_TMF, cnt_eNB)
         Patt_SB = Patt_SBeNB
         Patt_UtraBands = Patt_UtraBands_eNB
         Patt_GeRANBands = Patt_GeRANBands_eNB
@@ -509,8 +504,8 @@ with open(ff, 'w') as fO:
         Patt_geranPS = Patt_geranPS_eNB
         Patt_UTRA = Patt_UTRA_eNB
         Patt_UERATcap = Patt_UERATcap_eNB
-        corr_eNB = 1  # Коррекция позиции  FGI = на 1 позицию
-        corr_eNB2 = 1  # на 1 позицию правее
+        corr_eNB_FGI = 1  # Коррекция позиции  FGI = на 1 позицию
+        corr_eNB_GU = 2  # на 2 позиции правее
         Patt_BWclassUL = Patt_BWclassUL_eNB
         Patt_BWclassDL = Patt_BWclassDL_eNB
         Patt_MIMO = Patt_MIMO_eNB
@@ -525,11 +520,9 @@ with open(ff, 'w') as fO:
     print("\n", file=fO)
     ##
     logger.info('Перебираем все строки для поиска UE Access Stratum')
-
     UEaccS = CollectPatt(s, Patt_UEacc,0)
     print("Найденные 3gpp Access Stratum:", len(UEaccS), file=fO)
     print("=================================", file=fO)
-
     for i in range(0, len(UEaccS)):
         print(UEaccS[i], end='', file=fO)
     print("\n", file=fO)
@@ -557,10 +550,8 @@ with open(ff, 'w') as fO:
     logger.info('LTE DL Categories: %s', S_UEcatDL)
     logger.info('LTE UL Categories: %s', S_UEcatUL)
     ##
-    logger.info('Обнуляем начальное значение несущих EUTRA')
-    S_EUTRA = [] #  номера LTE bands
+    S_EUTRA = [] #  номера LTE bands, Обнуляем начальное значение несущих EUTRA
     nb = 0
-    ##
     logger.info('Перебираем все строки для сбора бэндов EUTRA')
     for i in range(0, len(s)):
         pos = s[i].find(Patt_SB)
@@ -631,7 +622,6 @@ with open(ff, 'w') as fO:
     print("Найденные UTRA bands:", len(S_UTRAN), file=fO)
     print("========================", file = fO)
     for i in range(0, len(S_UTRAN)):
-#       print(UtraBands[i], end='\n', file=fO)
         S_UTRA.append(int(valfrombrackets(S_UTRAN[i]))+1)
         print(S_UTRA[i],'\t',S_UTRAN[i], end='\n', file=fO)
     print("\n", file=fO)
@@ -654,12 +644,12 @@ with open(ff, 'w') as fO:
 
     if fgi_out:
         # Поиск FGI r8
-        logger.info('Поиск FGI r9')
+        logger.info('Поиск FGI r8')
         for i in range(0, len(s)):
             pos = s[i].find(Patt_FGI8)
             if (pos >= 0):
-                FGI8Txt = s[i][pos + 30 + corr_eNB:pos + 30 + 32 + corr_eNB]
-                if len(FGI8Txt) > 0:
+                FGI8Txt = valFGIfromquotes(s[i])
+                if len(FGI8Txt) == 32:
                     print("         0               1               ", file=fO)
                     print("         0123456789ABCDEF0123456789ABCDEF", file=fO)
                     print("         +---------------+---------------+", file=fO)
@@ -673,8 +663,8 @@ with open(ff, 'w') as fO:
         for i in range(0, len(s)):
             pos = s[i].find(Patt_FGI9)
             if (pos >= 0):
-                FGI9Txt = s[i][pos + 33 + corr_eNB:pos + 33 + 32 + corr_eNB]
-                if len(FGI9Txt) > 0:
+                FGI9Txt = valFGIfromquotes(s[i])
+                if len(FGI9Txt) == 32:
                     print("         0               1               ", file=fO)
                     print("         0123456789ABCDEF0123456789ABCDEF", file=fO)
                     print("         +---------------+---------------+", file=fO)
@@ -688,8 +678,8 @@ with open(ff, 'w') as fO:
         for i in range(0, len(s)):
             pos = s[i].find(Patt_FGI10)
             if (pos >= 0):
-                FGI10Txt = s[i][pos + 32 + corr_eNB:pos + 32 + 32 + corr_eNB]
-                if len(FGI10Txt) > 0:
+                FGI10Txt = valFGIfromquotes(s[i])
+                if len(FGI10Txt) == 32:
                     print("         0               1               ", file=fO)
                     print("         0123456789ABCDEF0123456789ABCDEF", file=fO)
                     print("         +---------------+---------------+", file=fO)
@@ -700,175 +690,33 @@ with open(ff, 'w') as fO:
         print("\n", file=fO)
     ##
     logger.info('Поиск капабилити 2g/3g')
-
-    [GeranPScaptxt, GeranCScaptxt, UTRANcaptxt] = GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UERATcap, corr_eNB2, geran_out, utran_out)
-
-    # geranPS_pos = len(s)  # по умолчанию начало блоков GeRAN PS/CS//UTRAN = последней строке
-    # geranCS_pos = len(s)
-    # UTRAN_pos = len(s)
-    # ##
-    # logger.info('Пытаемся найти истинные начала блоков GeRAN PS/CS//UTRAN')
-    # for i in range(0, len(s)):
-    #     pos = s[i].find(Patt_geranPS)
-    #     if (pos >= 0):
-    #         geranPS_pos = i
-    #         break
-    # for i in range(0, len(s)):
-    #     pos = s[i].find(Patt_geranCS)
-    #     if (pos >= 0):
-    #         geranCS_pos = i
-    #         break
-    # for i in range(0, len(s)):
-    #     pos = s[i].find(Patt_UERATcap)
-    #     if (pos >= 0):
-    #         UTRAN_pos = i
-    #         break
-    # if geranPS_pos == len(s):
-    #     print("geranPS block is absent", file=fO)
-    #     logger.error("geranPS block is absent")
-    # if geranCS_pos == len(s):
-    #     print("geranCS block is absent", file=fO)
-    #     logger.error("geranCS block is absent")
-    # if UTRAN_pos == len(s):
-    #     print("UTRAN   block is absent", file=fO)
-    #     logger.error("UTRAN   block is absent")
-    # # упорядочиваем блоки
-    # smin = min(geranPS_pos, geranCS_pos, UTRAN_pos)
-    # smax = max(geranPS_pos, geranCS_pos, UTRAN_pos)
-    # ##
-    # logger.info('Ищем строку капабилити в блоке UTRAN')
-    # if utran_out and UTRAN_pos < len(s):
-    #     if UTRAN_pos == smax:
-    #         k = len(s)
-    #         print("<UTRAN block is 3rd>", file=fO)
-    #     elif UTRAN_pos in range(smin + 1, smax):
-    #         k = smax
-    #         print("<UTRAN block is 2nd>", file=fO)
-    #     else:  # UTRAN_pos == smin
-    #         if geranPS_pos > geranCS_pos:
-    #             k = geranCS_pos
-    #             print("<UTRAN block is 1st, geranCS is 2nd>", file=fO)
-    #         else:
-    #             k = geranPS_pos
-    #             print("<UTRAN block is 1st, geranPS is 2nd>", file=fO)
-    #     for i in range(UTRAN_pos, k):
-    #         pos2 = s[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
-    #         if (pos2 >= 0):
-    #             pos3 = s[i].find(" (")  # позиция конца паттерна в строке
-    #             if pos3 == None:
-    #                 UTRANcapTxt = s[i][pos + 19 + corr_eNB2:]
-    #             else:
-    #                 UTRANcapTxt = s[i][pos + 19 + corr_eNB2:pos3]
-
+    [GeranPScapTxt,GeranCScapTxt,UTRANcapTxt]=GERAN_UTRAN_Capabilities(s, Patt_geranPS, Patt_geranCS, Patt_UTRA, corr_eNB_GU, geran_out, utran_out)
+    if (len(UTRANcapTxt) > 1):
         print("UTRAN capabilities: \n =0x", UTRANcapTxt, sep='', file=fO)
-
         if utrangeranbinary:
-            # bits = 4 * len(UTRANcapTxt)
-            if (len(UTRANcapTxt) > 1):
-                UTRANcapBits = Conv2Bits(UTRANcaptxt)
-            #     UTRANcapBytes = bytes.fromhex(UTRANcapTxt)
-            #     print("\nBinary = ", end='', file=fO)
-            #     UTRANcapBits = []
-            #     n = int.from_bytes(UTRANcapBytes, byteorder='big', signed=False)
-            #     for i in (range(bits - 1, 0, -1)):
-            #         if ((2 ** i & n) > 0):
-            #             UTRANcapBits.append("1")
-            #         else:
-            #             UTRANcapBits.append("0")
-                for i in range(0, bits - 1):
-                    print(UTRANcapBits[i], file=fO)
-                print("\n", file=fO)
-        print("\n", file=fO)
-    ##
-    # logger.info('Поиск капабилити для GeranPS')
-    # if geran_out and (geranPS_pos < len(s)):
-    #     if geranPS_pos == smax:
-    #         k = len(s)
-    #         print("<geranPS block is 3rd>", file=fO)
-    #     elif geranPS_pos in range(smin + 1, smax):
-    #         k = smax
-    #         print("<geranPS block is 2nd>", file=fO)
-    #     else:  # geranPS_pos == smin
-    #         if geranCS_pos > UTRAN_pos:
-    #             k = UTRAN_pos
-    #             print("<geranPS block is 1st, UTRAN is 2nd>", file=fO)
-    #         else:
-    #             k = geranCS_pos
-    #             print("<geranPS block is 1st, geranCS is 2nd>", file=fO)
-    #     ##
-    #     logger.info('Ищем строку капабилити в блоке geranPS')
-    #     for i in range(geranPS_pos, k):
-    #         pos2 = s[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
-    #         if (pos2 >= 0):
-    #             pos3 = s[i].find(" (")
-    #             if pos3 == None:
-    #                 GeranPScapTxt = s[i][pos + 19 + corr_eNB2:]
-    #             else:
-    #                 GeranPScapTxt = s[i][pos + 19 + corr_eNB2:pos3]
-        if (len(GeranPScapTxt) > 1):
-            print("\nGERAN PS capabilities: \n =0x", GeranPScapTxt, sep='', file=fO)
-            if utrangeranbinary:
-                # bits = 4 * len(GeranPScapTxt)
-                # GeranPScapBytes = bytes.fromhex(GeranPScapTxt)
-                if (len(GeranPScapTxt) > 1):
-                    GeranPScapBits = Conv2Bits(GeranPScapTxt)
-                    print("\nGERAN PS capabilities: \n =0x", GeranPScapTxt, sep='', file=fO)
-                    ## print(GeranPScapBytes,file = fO)
-                    GeranPScapBits = []
-                    n = int.from_bytes(GeranPScapBytes, byteorder='big', signed=False)
-                    for i in (range(bits - 1, 0, -1)):
-                        if ((2 ** i & n) > 0):
-                            GeranPScapBits.append("1")
-                        else:
-                            GeranPScapBits.append("0")
-                    print("\nBinary = ", end='', file=fO)
-                    for i in range(0, bits - 1):
-                        print(GeranPScapBits[i], end='', file=fO)
-                    print("\n", file=fO)
-        print("\n", file=fO)
-
-    logger.info('Поиск капабилити для GeranCS')
-    if geran_out and geranCS_pos < len(s):
-        if geranCS_pos == smax:
-            k = len(s)
-            print("<geranCS block is 3rd>", file=fO)
-        elif geranCS_pos in range(smin + 1, smax):
-            k = smax
-            print("<geranCS block is 2nd>", file=fO)
-        else:  # geranCS_pos == smin
-            if geranPS_pos > UTRAN_pos:
-                k = UTRAN_pos
-                print("<geranCS block is 1st, UTRAN is 2nd>", file=fO)
-            else:
-                k = geranPS_pos
-                print("<geranCS block is 1st, geranPS is 2nd>", file=fO)
-            ##
-        logger.info('Ищем строку капабилити в блоке geranCS')
-        for i in range(geranCS_pos, k):
-            pos2 = s[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
-            if (pos2 >= 0):
-                pos3 = s[i].find(" (")  # позиция конца паттерна в строке
-                if pos3 == None:
-                    GeranCScapTxt = s[i][pos + 19 + corr_eNB2:]
-                else:
-                    GeranCScapTxt = s[i][pos + 19 + corr_eNB2:pos3]
-        if (len(GeranCScapTxt) > 1):
-            print("GERAN CS capabilities: \n =0x", GeranCScapTxt, sep='', file=fO)
-            ## print(GeranCScapBytes,file = fO)
-            GeranCScapBits = []
-            bits = 4 * len(GeranCScapTxt)
-            if utrangeranbinary:
-                GeranCScapBytes = bytes.fromhex(GeranCScapTxt)
-                n = int.from_bytes(GeranCScapBytes, byteorder='big', signed=False)
-                for i in (range(bits - 1, 0, -1)):
-                    if ((2 ** i & n) > 0):
-                        GeranCScapBits.append("1")
-                    else:
-                        GeranCScapBits.append("0")
-                print("\nBinary = ", end='', file=fO)
-                for i in range(0, bits - 1):
-                    print(GeranCScapBits[i], end='', file=fO)
-                print("\n", file=fO)
+            UTRANcapBits = Conv2Bits(UTRANcapTxt)
+            print("\nBinary = ", end='', file=fO)
+            for i in range(len(UTRANcapBits)):
+                print(UTRANcapBits[i], end='',file=fO)
+            print("\n", file=fO)
+    print("\n", file=fO)
+    if (len(GeranPScapTxt) > 1):
+        print("\nGERAN PS capabilities: \n =0x", GeranPScapTxt, sep='', file=fO)
+        if utrangeranbinary:
+            GeranPScapBits = Conv2Bits(GeranPScapTxt)
+            print("\nBinary = ", end='', file=fO)
+            for i in range(len(GeranPScapBits)):
+                print(GeranPScapBits[i], end='', file=fO)
+            print("\n", file=fO)
+    print("\n", file=fO)
+    if (len(GeranCScapTxt) > 1):
+        print("GERAN CS capabilities: \n =0x", GeranCScapTxt, sep='', file=fO)
+        if utrangeranbinary:
+            GeranCScapBits = Conv2Bits(GeranCScapTxt)
+            print("\nBinary = ", end='', file=fO)
+            for i in range(len(GeranCScapBits)):
+                print(GeranCScapBits[i], end='', file=fO)
+            print("\n", file=fO)
     print("\n", file=fO)
 
     # Костыль для поиска UL 256QAM для R14
@@ -1014,7 +862,6 @@ with open(ff, 'w') as fO:
             if table_format:
                 print(t1, file=fO)
         print("\n", file=fO)
-        #        print("\n",file = fO)
         ##
         logger.info('Вывод списка компонентных несущих')
         if Ncarr > 0:
@@ -1086,22 +933,16 @@ with open(ff, 'w') as fO:
 
                 sheet['A2'] = 'LTE category DL+UL'
                 sheet['B2'] = str(S_UEcat)
-
                 sheet['A3'] = 'LTE category DL'
                 sheet['B3'] = str(S_UEcatDL)
-
                 sheet['A4'] = 'LTE category UL'
                 sheet['B4'] = str(S_UEcatUL)
-
                 sheet['A5'] = 'EUTRA_Bands'
                 sheet['B5'] = str(S_EUTRA)
-
                 sheet['A6'] = 'UTRA_Bands'
                 sheet['B6'] = str(S_UTRA)
-
                 sheet['A7'] = 'GeRAN_Bands'
                 sheet['B7'] = str(S_GERAN)
-
                 sheet['A8'] = '256QAM for used bands'
                 if S256DL and S256UL:
                     sheet['B8'] = 'DL + UL'
@@ -1112,14 +953,14 @@ with open(ff, 'w') as fO:
                         sheet['B8'] = 'UL'
                     else:
                         sheet['B8'] = ''
-                sheet['B8'].font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['B8'].font = Font(name=FSimple,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
 
                 sheet['A9'] = 'MIMO 4x4 for used bands'
                 if S_4x4:
                     sheet['B9'] = 'Supported'
                 else:
                     sheet['B9'] = 'Not Supported'
-                sheet['B9'].font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['B9'].font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
 
                 sheet['A10'] = 'CA 7c, 256 QAM, MIMO 4x4'
                 S_Qualcomm = (((S256DL or S256UL) and S_4x4) and S_CA7C)
@@ -1127,45 +968,80 @@ with open(ff, 'w') as fO:
                     sheet['B10'] = 'Supported'
                 else:
                     sheet['B10'] = 'Not Supported'
-                sheet['B10'].font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['B10'].font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
                 RowInSheet = 15
                 sheet.cell(row=RowInSheet, column=1, value='UE access stratum:')
                 sheet.cell(row=RowInSheet, column=2, value= str(UEaccS))
-                RowInSheet+=1
+                RowInSheet=16
                 sheet.cell(row=RowInSheet, column=1, value='UE categories:')
                 sheet.cell(row=RowInSheet, column=2, value= str(UEcats))
-                RowInSheet+=1
+                RowInSheet=18
+                sheet.cell(row=RowInSheet, column=2, value= str(FGILine1))
+                RowInSheet=19
+                sheet.cell(row=RowInSheet, column=2, value= str(FGILine2))
+                RowInSheet=20
+                sheet.cell(row=RowInSheet, column=2, value= str(FGILine3))
+                RowInSheet=21
                 sheet.cell(row=RowInSheet, column=1, value='FGI r8 = ')
                 sheet.cell(row=RowInSheet, column=2, value= str(FGI8Txt))
-                RowInSheet+=1
+                RowInSheet=22
                 sheet.cell(row=RowInSheet, column=1, value='FGIr9 = ')
                 sheet.cell(row=RowInSheet, column=2, value= str(FGI9Txt))
-                RowInSheet+=1
+                RowInSheet=23
                 sheet.cell(row=RowInSheet, column=1, value='FGIr10 = ')
                 sheet.cell(row=RowInSheet, column=2, value= str(FGI10Txt))
-                RowInSheet+=1
+                RowInSheet=24
                 sheet.cell(row=RowInSheet, column=1, value='UTRAN capabilities : ')
                 sheet.cell(row=RowInSheet, column=2, value= str(UTRANcapTxt))
-                RowInSheet+=1
+                RowInSheet=25
                 sheet.cell(row=RowInSheet, column=1, value='GERAN CS capabilities : ')
                 sheet.cell(row=RowInSheet, column=2, value= str(GeranCScapTxt))
-                RowInSheet+=1
+                RowInSheet=26
                 sheet.cell(row=RowInSheet, column=1, value='GERAN PS capabilities : ')
                 sheet.cell(row=RowInSheet, column=2, value= str(GeranPScapTxt))
-                RowInSheet+=2
+
+                for i in range(2,28): # Выделяем заголовки строк 2..27 в колонке А
+                    i5 = str(i)
+                    cellN = 'A'+i5
+                    sheet[cellN].font = Font(name=FBold, size=12, underline='none', color=colors.BLACK, bold=True, italic=False)
+                # печатаем позже, т.к. не надо выделять под одну гребенку
+                RowInSheet=17
+                sheet.cell(row=RowInSheet, column=1, value='Feature Group Indicators: ')
+                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+
+                for i in range(2,8): # Вывод данных в колонке B в строках 2..7 жирным моноширинным шрифтом
+                    i5 = str(i)
+                    cellN = 'B'+i5
+                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=colors.BLACK, bold= True, italic=False)
+                for i in range(18,28): # Вывод данных в колонке B в строках 18..27 жирным моноширинным шрифтом
+                    i5 = str(i)
+                    cellN = 'B'+i5
+                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=colors.BLACK, bold= True, italic=False)
+                RowInSheet=28
                 sheet.cell(row=RowInSheet, column=1, value='CA Combinations : ')
-                sheet.cell(row=RowInSheet,column=1).font = Font(size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
-                RowInSheet+=1
-                Menu = ['Comb#', 'Band', 'DLbits', 'ULbits', 'DL#', 'UL#', 'MIMO', 'DL bandwith', 'UL bandwith',
+                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet.cell(row=RowInSheet, column=2, value= 'Для TDD расчет ожидаемой скорости выполняется для конфигурации TDD #3 (6DL/3UL таймслотов)')
+                Menu = ['Combination Nbr', 'Band', 'DL,bits', 'UL,bits', 'DL#', 'UL#', 'MIMO', 'DL bandwith', 'UL bandwith',
                  'DL Throughput', 'UL Throughput']
+                RowInSheet=29
                 for i in range (11):
                     sheet.cell(row=RowInSheet, column=i+1, value= Menu[i])
-                    sheet.cell(row=RowInSheet,column=i+1).font = Font(size=12, underline='none', color=colors.YELLOW, bold=True, italic=False)
+                    sheet.cell(row=RowInSheet,column=i+1).font = Font(name=FBold,size=12, underline='none', color=colors.YELLOW, bold=True, italic=False)
                     sheet.cell(row=RowInSheet,column=i+1).fill = PatternFill(fill_type='solid', start_color=colors.DARKBLUE, end_color=colors.DARKBLUE)
-                RowInSheet+=1
+                sheet.column_dimensions['A'].width = 32
+                sheet.column_dimensions['B'].width = 31
+                for i5 in ['C','D','E','F','G']: # узкие колонки
+                    sheet.column_dimensions[i5].width = 10
+                for i5 in ['H','I','J','K']: # колонки средней ширины
+                    sheet.column_dimensions[i5].width = 18
+                CCC = [] # таблица комбинаций для поиска
+                CCC1 = (str(CCs[0][1]) + str(CCs[0][4]))
                 prevComb = CCs[0][0]
                 ccinComb = 0
                 CurrComb = CCs[0][0]
+                CCCinUsed = False
+                CCCGreen = False
+                clrCC = C_LightYellow
                 # Шаблон строки СУММы
                 SumComb = ['','','','','','','','','',0,0] 
                 #        0      1     2       3       4    5    6     7     8     9      10
@@ -1176,13 +1052,24 @@ with open(ff, 'w') as fO:
                         # Добавляем текущие данные в строку Суммы текущей коминации:
                         SumComb[9] = SumComb[9]+CCs[i][9]
                         SumComb[10] = SumComb[10]+CCs[i][10]
+                        CCC1=CCC1+(str(CCs[i][1])+str(CCs[i][4])) # Band + количество смежных несущих в бэнде, например, '31', '72'
+                        CCC.append(CCC1)
                     else: # начало новой комбинации, старая законилась, надо напечатать ее сумму
+                        CCCinUsed = CheckCCCinUsed(CCC1, UsedPat) # old CCC1 of all cc in combination
+                        CCCGreen = CheckCCCinUsed(CCC1, UsedPatGreen) # for almost used
                         CurrComb = CCs[i][0]
+                        CCC1 = (str(CCs[i][1]) + str(CCs[i][4])) # new CCC1 of first cc
                         # Example: Sum of comb.#3 (4ccs)
                         SumComb[0] = 'SUM of comb.# ' + str(prevComb) + ' (' + str(ccinComb) + 'ccs)'
                         RowInSheet+=1  # добавляем row для вывода суммы закончившейся комбинации
+                        if CCCinUsed:
+                            clrCC = C_LightYellow
+                        else:
+                            clrCC = C_LBlue
+                        if CCCGreen:
+                            clrCC = C_LightGreen
                         for j in range(11): # вывод суммы закончившейся комбинации
-                            FillCellSum(RowInSheet,j+1,SumComb[j], sheet)
+                            FillCellSum(RowInSheet,j+1,SumComb[j], sheet, clrCC)
                         ccinComb = 1
                         SumComb[9] = CCs[i][9]
                         SumComb[10] = CCs[i][10]
@@ -1193,8 +1080,16 @@ with open(ff, 'w') as fO:
                 # Конец цикла перебора несущих
                 RowInSheet+=1  # добавляем row для вывода суммы последней комбинации
                 SumComb[0] = 'SUM of comb.# ' + str(prevComb) + ' (' + str(ccinComb) + 'ccs)'
+                CCC1 = CCC1 + (str(CCs[i][1]) + str(CCs[i][4]))  # Band + количество смежных несущих в бэнде, например, '31', '72'
+                CCCinUsed = CheckCCCinUsed(CCC1, UsedPat)
+                if CCCinUsed:
+                    clrCC = C_LightYellow
+                else:
+                    clrCC = C_LBlue
+                if CCCGreen:
+                    clrCC = C_LightGreen
                 for j in range(11): # вывод суммы последней комбинации
-                    FillCellSum(RowInSheet, j+1, SumComb[j], sheet)
+                    FillCellSum(RowInSheet, j+1, SumComb[j], sheet, clrCC)
                 logging.info('Вкладка Cap.Info заполнена')
                 book.save(fnX)
                 if os.path.exists(fnX):
