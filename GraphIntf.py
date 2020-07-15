@@ -25,6 +25,7 @@ def eee(event):
     exit(0)
 def p2():
     print('Key2 pressed')
+    root.destroy()
     exit(0)
 def c0():
     print('1.Checked ', var1.get(),' | Radio = ', var9.get())

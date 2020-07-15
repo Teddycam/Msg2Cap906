@@ -379,6 +379,11 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, ut
 # fnX - полное имя выходного Excel файла
 # f0  -  файл ввода-вывода
 
+root = tkinter.Tk()
+root.title("Msg2Cap")
+root.wm_withdraw() # this completely hides the root window
+# root.iconify() # this will move the root window to a minimized icon.
+
 t1 = PrettyTable()
 t2 = PrettyTable()
 if len(sys.argv) < 2:  # нет параметров
@@ -398,6 +403,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         logging.info('Output text file: %s', fnO)
         s = f.readlines()
         f.close()
+        root.destroy()
     # Should be '.xls','.xlsx','.xlsm'
     elif ('xls' in ext):
         Excel_output = True
@@ -436,6 +442,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
             for cell in row:
                 if cell.value != None:
                     s.append(str([cell.value ]).rstrip("'/]"))
+        root.destroy()
     else:
         logger.error('File type %s undefined', ext)
         exit(0)
