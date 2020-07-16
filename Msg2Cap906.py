@@ -1,4 +1,5 @@
 from  Patterns import *
+from tkinter import *
 import os
 import sys
 import openpyxl
@@ -10,15 +11,17 @@ from openpyxl.styles import colors  # Подключаем цвета для т�
 from openpyxl.styles import PatternFill  # Подключаем стили для ячеек
 
 # Switches
-table_format = True
-file_output = True
-Excel_output = False
-BandsFilter = True
+# ========
 fgi_out = True
 geran_out = True
 utran_out = True
 utrangeranbinary = True
 R14_enabled = True
+
+txt_output = False
+table_format = True
+Excel_output = False
+BandsFilter = True
 
 # VARs
 TMF = False
@@ -29,10 +32,6 @@ S_4x4 = False # 4 layers for some of use band(s)
 S_8x8 = False # 8 layers for some of use band(s)
 S_CA7C = False # CA 7C support (CA of 2 carriers in Band 7)
 S_Qualcomm = False # Qualcomm's requirement statement value
-
-# Bands filters and XLS conclusions base
-PrimaryEUTRABand = 7 # Carrier of LTE band for which "Supported" decision should be made about 256QAM or 4/8 layers supporting
-SecondaryEUTRABands = [3,7,20] # Carriers of LTE Bands, which combinations are supported in MF and lab ERANs for special marked output
 
 # internal DB arrays:
 Bands = []
@@ -68,7 +67,7 @@ def valfrombrackets(inputstr):
     """
     This for parse something
     :param inputstr: this is regular expression
-    :return: string value withour brackets
+    :return: string value without brackets
     e.g. inputstr = '(bla vla)'
     return = 'bla vla'
     """
@@ -228,6 +227,115 @@ def Conv2Bits(Captxt):
                 CapBits.append("0")
     return CapBits
 
+def GUI(tt):
+    """
+    This is GUI for getting switches values and checking output file name and path
+    :param tt: output file name
+    : return: ttt: possibly changed output file name
+              vv: list of switches
+              ls: list of selected elements of list
+    """
+    def p1():
+        global vv
+        vv = []
+        global ls
+        ls = []
+        logger.info('Button1 pressed')
+        global ttt
+        ttt = text1.get('1.0', END)
+        logger.info('File name changed to: %s', ttt)
+        vv.append(var1.get())
+        vv.append(var2.get())
+        vv.append(var3.get())
+        vv.append(var4.get())
+        vv.append(var5.get())
+        vv.append(var6.get())
+        vv.append(var7.get())
+        vv.append(var8.get())
+        vv.append(var9.get())
+        logger.info('Switches: %s', vv)
+        ls = listbox1.curselection()
+        logger.info('List: %s', ls)
+        window.destroy()
+
+    def p2():
+        logger.warning('Button2 pressed, cancel')
+        window.destroy()
+        exit(0)
+
+    def c0():
+        logger.info('1_Checked %s | Radio = %s', var1.get(), var9.get())
+
+    def ppp(event):
+        logger.info('Button1 pressed')
+
+    def eee(event):
+        logger.warning('Button2 pressed, cancel')
+        exit(0)
+
+    window = Tk()
+    var1 = IntVar()
+    var2 = IntVar()
+    var3 = IntVar()
+    var4 = IntVar()
+    var5 = IntVar()
+    var6 = IntVar()
+    var7 = IntVar()
+    var8 = IntVar()
+    var9 = IntVar()
+    window.title("Msg2Cap")
+    text1 = Text(window, height = 2, width = 20, font = 'Courier 10', wrap = WORD)
+    listbox1 = Listbox(window, height = 8, width = 15, selectmode = EXTENDED)
+    text1.insert(1.0, tt)
+    list1 = ['Выбор №0','Выбор №1','Выбор №2','Выбор №3','Выбор №4','Выбор №5','Выбор №6','Выбор №7','Выбор №8','Выбор №9', 'Выбор №10','Выбор №11']
+    for i in list1: listbox1.insert(END,i)
+    frame2 = Frame(window, background = 'red', bd = 0)
+    check1 = Checkbutton(frame2, text = SwitchesNames[0], font = 'Courier 10', variable = var1, onvalue = 1, offvalue = 0 ,command = c0)
+    check2 = Checkbutton(frame2, text = SwitchesNames[1], font = 'Courier 10', variable = var2, onvalue = 1, offvalue = 0)
+    check3 = Checkbutton(frame2, text = SwitchesNames[2], font = 'Courier 10', variable = var3, onvalue = 1, offvalue = 0)
+    check4 = Checkbutton(frame2, text = SwitchesNames[3], font = 'Courier 10', variable = var4, onvalue = 1, offvalue = 0)
+    check5 = Checkbutton(frame2, text = SwitchesNames[4], font = 'Courier 10', variable = var5, onvalue = 1, offvalue = 0)
+    check6 = Checkbutton(frame2, text = SwitchesNames[5], font = 'Courier 10', variable = var6, onvalue = 1, offvalue = 0)
+    check7 = Checkbutton(frame2, text = SwitchesNames[6], font = 'Courier 10', variable = var7, onvalue = 1, offvalue = 0)
+    check8 = Checkbutton(frame2, text = SwitchesNames[7], font = 'Courier 10', variable = var8, onvalue = 1, offvalue = 0)
+    rbutton1 = Radiobutton( window, text = ' Screen ', font = 'Courier 10', variable = var9, value = 1, command = c0)
+    rbutton2 = Radiobutton( window, text = 'TXT file', font = 'Courier 10', variable = var9, value = 2, command = c0)
+    rbutton3 = Radiobutton( window, text = 'XLS file', font = 'Courier 10', variable = var9, value = 3, command = c0)
+    frame1 = Frame(window, background = 'gray', bd = 2)
+    button1 = Button(frame1, text = 'Запуск',
+            # background = "#999",  # фоновый цвет кнопки
+            activebackground= "#999",
+            foreground = "#0f0",  # цвет текста
+            padx = "5",  # отступ от границ до содержимого по горизонтали
+            pady = "4",  # отступ от границ до содержимого по вертикали
+            font = "10",  # высота шрифта
+            command = p1)
+    button2 = Button(frame1, text = 'Отмена',
+             background="#777",  # фоновый цвет кнопки
+             foreground="#f00",  # цвет текста
+             padx="5",  # отступ от границ до содержимого по горизонтали
+             pady="4",  # отступ от границ до содержимого по вертикали
+             font="10",  # высота шрифта
+             command = p2)
+    text1.pack(side = 'top', fill = 'both')
+    listbox1.pack(side = 'right', fill = 'y', expand = TRUE)
+    frame2.pack(side = 'left')
+    check1.pack(side = 'top')
+    check2.pack(side = 'top')
+    check3.pack(side = 'top')
+    check4.pack(side = 'top')
+    check5.pack(side = 'top')
+    check6.pack(side = 'top')
+    check7.pack(side = 'top')
+    check8.pack(side = 'top')
+    rbutton1.pack( fill = 'both', expand = TRUE)
+    rbutton2.pack(fill = 'y', expand = TRUE)
+    rbutton3.pack(fill = 'y', expand = TRUE)
+    frame1.pack(side = 'top')
+    button1.pack(side = 'left')
+    button2.pack(side = 'right')
+    window.wait_window(window)
+    return ttt,vv,ls
 
 def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, utranoutSW):
     """
@@ -379,16 +487,17 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, ut
 # fnX - полное имя выходного Excel файла
 # f0  -  файл ввода-вывода
 
-root = tkinter.Tk()
-root.title("Msg2Cap")
-root.wm_withdraw() # this completely hides the root window
-# root.iconify() # this will move the root window to a minimized icon.
+FD_win = tkinter.Tk()
+FD_win.title("Msg2Cap")
+# FD_win.wm_withdraw() # this completely hides the FD_win window
+# FD_win.iconify() # this will move the FD_win window to a minimized icon.
 
 t1 = PrettyTable()
 t2 = PrettyTable()
 if len(sys.argv) < 2:  # нет параметров
     # Call dialogue box to ask input file with capability_info trace
     fn = tkinter.filedialog.askopenfilename()
+    FD_win.destroy()
 else:
     fn = sys.argv[1]
 cwd = os.getcwd()  # текущий каталог
@@ -401,9 +510,34 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         # Add prefix 'Parsed_' to the input file name for the ouput (parsed) filename (with the same file path)
         fnO = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
         logging.info('Output text file: %s', fnO)
+        fn1, fl, sl = GUI(fnO) #ttt, vv, ls
+        # Translate  GUI outputs
+        fgi_out = bool(fl[0])
+        geran_out = bool(fl[1])
+        utran_out = bool(fl[2])
+        utrangeranbinary = bool(fl[3])
+        R14_enabled = bool(fl[4])
+        table_format = bool(fl[5])
+        BandsFilter = bool(fl[6])
+        fnO = fn1.rstrip('\n')
+        if fl[8] == 1: # Screen output only
+            txt_output = False
+            Excel_output = False
+        elif fl[8] == 2: # txt output only
+            txt_output = True
+            Excel_output = False
+        elif fl[8] == 3: #XLS output + TXT output
+            txt_output = True
+            Excel_output = True
+        else: # Unknown value returned from GUI
+            logging.error('Output Rbutton = %s is out of range', fl[8])
+            assert(1<=fl[8]<=3)
+
+        logging.info('Output text file changed to: %s', fn1)
+        logging.info('Selected entries: %s', sl)
+        logging.info('Switches: %s', fl)
         s = f.readlines()
         f.close()
-        root.destroy()
     # Should be '.xls','.xlsx','.xlsm'
     elif ('xls' in ext):
         Excel_output = True
@@ -422,6 +556,19 @@ if os.path.exists(fn):  # если файл трассировки сущест�
             exit(1)
         fnX = os.path.splitext(fn)[0]+'_parsed'+ext
         logging.info('Output XLS file: %s', fnX)
+        fn1, fl, sl = GUI(fnX)
+        # Translate  GUI outputs
+        fgi_out = bool(fl[0])
+        geran_out = bool(fl[1])
+        utran_out = bool(fl[2])
+        utrangeranbinary = bool(fl[3])
+        R14_enabled = bool(fl[4])
+        table_format = bool(fl[5])
+        BandsFilter = bool(fl[6])
+        fnX = fn1.rstrip('\n')
+        logging.info('Output XLS file changed to: %s', fn1)
+        logging.info('Selected entries: %s', sl)
+        logging.info('Switches: %s', fl)
         # Output TXT file name is the same like input filename, but with '_parsed' suffix and '.txt' extension
         fnO = os.path.splitext(fn)[0]+'_parsed.txt'
         logging.info('Output text file: %s', fnO)
@@ -433,7 +580,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
             # Меняем вкладку
             sheet = book[sheetIn]
         else:
-            logger.exception('Вкладка %s в таблице не найдена', sheetIn)
+            logger.warning('Вкладка %s в таблице не найдена', sheetIn)
             exit(0)
         logger.info('Вкладка %s', sheet.title)
         s = []
@@ -442,7 +589,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
             for cell in row:
                 if cell.value != None:
                     s.append(str([cell.value ]).rstrip("'/]"))
-        root.destroy()
+        # FD_win.destroy()
     else:
         logger.error('File type %s undefined', ext)
         exit(0)
@@ -451,15 +598,14 @@ else:  # Файл трассировки не найден
     exit
 
 # В дальнейшем вывод производится в заданный файл вывода (стандартный вывод на экран или в текстовый файл на диске)+++ или в файл Excel
-if file_output:  # <===================================================================================================================
+if txt_output:  # <===================================================================================================================
     ff = fnO
 else:
-    ff = sys.stdout
+    ff = 'null'
+    f0 = sys.stdout
 with open(ff, 'w') as fO:
-    # вариант без WITH
-    # fO = open(fnO, 'w')
-    # print("?", file = fO)
-    # fO.close()
+    if not(txt_output):
+        fO = sys.stdout
     logger.info("Трассировка %s содержит %s строк", fn, len(s))
     print("Трассировка", fn, " содержит ", len(s), " строк", file=fO)
     print("", file=fO)
@@ -1050,7 +1196,7 @@ with open(ff, 'w') as fO:
                 CCCGreen = False
                 clrCC = C_LightYellow
                 # Шаблон строки СУММы
-                SumComb = ['','','','','','','','','',0,0] 
+                SumComb = ['','','','','','','','','',0,0]
                 #        0      1     2       3       4    5    6     7     8     9      10
                 # CCs = [Comb#, Band, DLbits, ULbits, DL#, UL#, MIMO, DLBW, ULBW, DLTpt, ULTpt]
                 for i in range(Ncarr):

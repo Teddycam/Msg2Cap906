@@ -114,11 +114,6 @@ Patt_endCombeNB = "measParameters-v1020"
 Patt_bc = "BandCombinationParameters-r10"
 Patt_bc1430 = "BandCombinationParameters-v1430"
 
-UsedPat = ['31', '71', '72', '32', '3171', '3271', '3172', '3272', '7171', '7131', '7132', '7231' , '7232', '3131',
-           '201', '202', '71201', '72201', '31201', '32201', '3171201','717131','2013131','20132']
-UsedPatGreen = ['71', '72', '73', '3171', '7131', '3172', '7231', '3272', '7232', '3173', '7331', '7132', '7332', '3273']
-UsedPatCA7C = ['72']
-
 # Notes for code:
 
 # print("\n",file=sys.stdout)
@@ -139,3 +134,22 @@ C_LightYellow = '00FFFFA0'
 C_LightGreen =  '00A0FFA0'
 C_MGreen =      '0000A000'
 C_LBlue =       '00C0C0FF'
+
+# Bands filters and XLS conclusions base
+PrimaryEUTRABand = 7 # Carrier of LTE band for which "Supported" decision should be made about 256QAM or 4/8 layers supporting
+SecondaryEUTRABands = [3,7,20] # Carriers of LTE Bands, which combinations are supported in MF and lab ERANs for special marked output
+
+# Patterns for XLS coloring of used CCs
+UsedPat = ['31', '71', '72', '32', '3171', '3271', '3172', '3272', '7171', '7131', '7132', '7231' , '7232', '3131',
+           '201', '202', '71201', '72201', '31201', '32201', '3171201','717131','2013131','20132']
+UsedPatGreen = ['71', '72', '73', '3171', '7131', '3172', '7231', '3272', '7232', '3173', '7331', '7132', '7332', '3273']
+UsedPatCA7C = ['72']
+
+SwitchesNames = ('   FGI out   ', #0
+                 '  GERAN out  ', #1
+                 '  UTRAN out  ', #2
+                 ' 2g3g Binary ', #3
+                 ' R14_enabled ', #4
+                 'Table output ', #5
+                 ' BandsFilter ', #6
+                 '    spare    ') #7

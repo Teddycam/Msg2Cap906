@@ -1,7 +1,11 @@
+# from tkinter import *
+# import tkinter
+# import tkinter.filedialog
 # import tkinter
 from tkinter import *
+
 def ppp(event):
-    print('Key1 pressed')
+    print('Key1 pressed', file=sys.stdout)
 def p1():
     print('Key1 pressed')
     tt = text1.get('1.0', END)
@@ -25,12 +29,12 @@ def eee(event):
     exit(0)
 def p2():
     print('Key2 pressed')
-    root.destroy()
-    exit(0)
+    window.destroy()
+    # exit(0)
 def c0():
     print('1.Checked ', var1.get(),' | Radio = ', var9.get())
 
-root = Tk()
+window = Tk()
 var1 = IntVar()
 var2 = IntVar()
 var3 = IntVar()
@@ -43,13 +47,13 @@ var9 = IntVar()
 # var10 = IntVar()
 # var11 = IntVar()
 vv = []
-root.title("Msg2Cap")
-text1 = Text(root, height = 2, width = 14, font = 'Arial 14', wrap = WORD)
-listbox1 = Listbox(root, height = 8, width = 15, selectmode = EXTENDED)
+window.title("Msg2Cap")
+text1 = Text(window, height = 2, width = 14, font = 'Arial 14', wrap = WORD)
+listbox1 = Listbox(window, height = 8, width = 15, selectmode = EXTENDED)
 text1.insert(1.0, 'Текстовый текст')
 list1 = ['Выбор №0','Выбор №1','Выбор №2','Выбор №3','Выбор №4','Выбор №5','Выбор №6','Выбор №7','Выбор №8','Выбор №9', 'Выбор №10','Выбор №11']
 for i in list1: listbox1.insert(END,i)
-frame2 = Frame(root, background = 'red', bd = 0)
+frame2 = Frame(window, background = 'red', bd = 0)
 check1 = Checkbutton(frame2, text = '1 пункт', variable = var1,
                      onvalue = True, offvalue = False,command = c0)
 check2 = Checkbutton(frame2, text = '2 пункт', variable = var2, onvalue = 1, offvalue = 0)
@@ -59,10 +63,10 @@ check5 = Checkbutton(frame2, text = '5 пункт', variable = var5, onvalue = 1
 check6 = Checkbutton(frame2, text = '6 пункт', variable = var6, onvalue = 1, offvalue = 0)
 check7 = Checkbutton(frame2, text = '7 пункт', variable = var7, onvalue = 1, offvalue = 0)
 check8 = Checkbutton(frame2, text = '8 пункт', variable = var8, onvalue = 1, offvalue = 0)
-rbutton1 = Radiobutton( root, text = 'Выбор 1', variable = var9, value = 1, command = c0)
-rbutton2 = Radiobutton( root, text = 'Выбор 2', variable = var9, value = 2, command = c0)
-rbutton3 = Radiobutton( root, text = 'Выбор 3', variable = var9, value = 3, command = c0)
-frame1 = Frame(root, background = 'gray', bd = 2)
+rbutton1 = Radiobutton( window, text = 'Screen', variable = var9, value = 1, command = c0)
+rbutton2 = Radiobutton( window, text = 'Text file', variable = var9, value = 2, command = c0)
+rbutton3 = Radiobutton( window, text = 'XLS file', variable = var9, value = 3, command = c0)
+frame1 = Frame(window, background = 'gray', bd = 2)
 button1 = Button(frame1, text = 'Запуск',
         # background = "#999",  # фоновый цвет кнопки
         activebackground= "#999",
@@ -97,4 +101,5 @@ button1.pack(side = 'left')
 button2.pack(side = 'right')
 # button1.bind('<Button-1>',ppp)
 # button2.bind('<Button-1>',eee)
-root.mainloop()
+window.mainloop()
+print('Finished')
