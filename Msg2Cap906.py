@@ -135,7 +135,7 @@ def EndStrFilter(inputstr):
     pos01 = inputstr.find(")")
     if (pos01 > 0):
         a = inputstr[:pos01+1]
-        a = a.rstrip('/n')
+        a = a.rstrip('\n')
         if len(a)>0:
             return a
         else:
@@ -231,9 +231,9 @@ def GUI(tt):
     """
     This is GUI for getting switches values and checking output file name and path
     :param tt: output file name
-    : return: ttt: possibly changed output file name
-              vv: list of switches
-              ls: list of selected elements of list
+    : return: ttt: [possibly] changed output text file name
+              vv: values list of the switches snd radiobuttons
+              ls: list of selected elements of list (not used yet)
     """
     def p1():
         global vv
@@ -273,6 +273,8 @@ def GUI(tt):
         logger.warning('Button2 pressed, cancel')
         exit(0)
 
+    logger = logging.getLogger('_GUI')
+
     window = Tk()
     var1 = IntVar()
     var2 = IntVar()
@@ -283,13 +285,30 @@ def GUI(tt):
     var7 = IntVar()
     var8 = IntVar()
     var9 = IntVar()
+
+    if '.txt' in ext:
+        switches = DEF_TXT_SW
+    elif 'xlsx' in ext:
+        switches = DEF_XLS_SW
+    else:
+        switches = DEF_SCR_SW
+    var1.set(switches[0])
+    var2.set(switches[1])
+    var3.set(switches[2])
+    var4.set(switches[3])
+    var5.set(switches[4])
+    var6.set(switches[5])
+    var7.set(switches[6])
+    var8.set(switches[7])
+    var9.set(switches[8])
+
     window.title("Msg2Cap")
-    text1 = Text(window, height = 2, width = 20, font = 'Courier 10', wrap = WORD)
+    text1 = Text(window, height = 2, width = len(tt)+5, font = 'Courier 10', wrap = WORD)
     listbox1 = Listbox(window, height = 8, width = 15, selectmode = EXTENDED)
     text1.insert(1.0, tt)
     list1 = ['Выбор №0','Выбор №1','Выбор №2','Выбор №3','Выбор №4','Выбор №5','Выбор №6','Выбор №7','Выбор №8','Выбор №9', 'Выбор №10','Выбор №11']
     for i in list1: listbox1.insert(END,i)
-    frame2 = Frame(window, background = 'red', bd = 0)
+    frame2 = Frame(window, background = 'white', bd = 0)
     check1 = Checkbutton(frame2, text = SwitchesNames[0], font = 'Courier 10', variable = var1, onvalue = 1, offvalue = 0 ,command = c0)
     check2 = Checkbutton(frame2, text = SwitchesNames[1], font = 'Courier 10', variable = var2, onvalue = 1, offvalue = 0)
     check3 = Checkbutton(frame2, text = SwitchesNames[2], font = 'Courier 10', variable = var3, onvalue = 1, offvalue = 0)
@@ -511,6 +530,8 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         fnO = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
         logging.info('Output text file: %s', fnO)
         fn1, fl, sl = GUI(fnO) #ttt, vv, ls
+        #switch to the parser's loger
+        logger = logging.getLogger('_Parser')
         # Translate  GUI outputs
         fgi_out = bool(fl[0])
         geran_out = bool(fl[1])
@@ -529,6 +550,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         elif fl[8] == 3: #XLS output + TXT output
             txt_output = True
             Excel_output = True
+            fnX = os.path.splitext(fn)[0] + '_parsed' + '.xlsx'
         else: # Unknown value returned from GUI
             logging.error('Output Rbutton = %s is out of range', fl[8])
             assert(1<=fl[8]<=3)
@@ -557,6 +579,8 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         fnX = os.path.splitext(fn)[0]+'_parsed'+ext
         logging.info('Output XLS file: %s', fnX)
         fn1, fl, sl = GUI(fnX)
+        #switch to the parser's loger
+        logger = logging.getLogger('_XLSproc')
         # Translate  GUI outputs
         fgi_out = bool(fl[0])
         geran_out = bool(fl[1])
@@ -671,6 +695,17 @@ with open(ff, 'w') as fO:
         eNB = True
         TMF = False
     print("\n", file=fO)
+    ##
+    logger.info('Active SWITCHes:')
+    logger.info('FGI_out = %s',fgi_out)
+    logger.info('geran_out = %s',geran_out)
+    logger.info('utran_out = %s',utran_out)
+    logger.info('utrangeranbinary = %s',utrangeranbinary)
+    logger.info('R14_enabled = %s',R14_enabled)
+    logger.info('table_format = %s',table_format)
+    logger.info('BandsFilter = %s',BandsFilter)
+    logger.info('txt_output = %s',txt_output)
+    logger.info('Excel_output = %s',Excel_output)
     ##
     logger.info('Перебираем все строки для поиска UE Access Stratum')
     UEaccS = CollectPatt(s, Patt_UEacc,0)
@@ -844,7 +879,7 @@ with open(ff, 'w') as fO:
     ##
     logger.info('Поиск капабилити 2g/3g')
     [GeranPScapTxt,GeranCScapTxt,UTRANcapTxt]=GERAN_UTRAN_Capabilities(s, Patt_geranPS, Patt_geranCS, Patt_UTRA, corr_eNB_GU, geran_out, utran_out)
-    if (len(UTRANcapTxt) > 1):
+    if (len(UTRANcapTxt) > 1) and utran_out:
         print("UTRAN capabilities: \n =0x", UTRANcapTxt, sep='', file=fO)
         if utrangeranbinary:
             UTRANcapBits = Conv2Bits(UTRANcapTxt)
@@ -853,7 +888,7 @@ with open(ff, 'w') as fO:
                 print(UTRANcapBits[i], end='',file=fO)
             print("\n", file=fO)
     print("\n", file=fO)
-    if (len(GeranPScapTxt) > 1):
+    if (len(GeranPScapTxt) > 1) and geran_out:
         print("\nGERAN PS capabilities: \n =0x", GeranPScapTxt, sep='', file=fO)
         if utrangeranbinary:
             GeranPScapBits = Conv2Bits(GeranPScapTxt)
@@ -862,7 +897,7 @@ with open(ff, 'w') as fO:
                 print(GeranPScapBits[i], end='', file=fO)
             print("\n", file=fO)
     print("\n", file=fO)
-    if (len(GeranCScapTxt) > 1):
+    if (len(GeranCScapTxt) > 1) and geran_out:
         print("GERAN CS capabilities: \n =0x", GeranCScapTxt, sep='', file=fO)
         if utrangeranbinary:
             GeranCScapBits = Conv2Bits(GeranCScapTxt)
@@ -1075,6 +1110,10 @@ with open(ff, 'w') as fO:
             logger.info("UE Capabilities parsing finished")
             if Excel_output:
                 logger = logging.getLogger('XLSproc')
+                if 'txt' in ext:
+                    # txt trace should be parsed to the xls output
+                    # new  xls file should be created with fnX name+path
+                    book = openpyxl.Workbook()
                 if "Parsed_Capabilities" not in book.sheetnames:
                     # Add new sheet, fill it and save book copy with new sheet
                     ws1 = book.create_sheet("Parsed_Capabilities")  # insert sheet at the end (by default)

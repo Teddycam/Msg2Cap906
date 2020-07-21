@@ -153,3 +153,13 @@ SwitchesNames = ('   FGI out   ', #0
                  'Table output ', #5
                  ' BandsFilter ', #6
                  '    spare    ') #7
+                                  # Bit 8:
+                                    # screen_out = 1
+                                    # txt_output = 2
+                                    # Excel_out = 3
+# Switches defaults
+# =================
+#bits         0  1  2  3  4  5  6  7  8
+DEF_SCR_SW = (1, 1, 1, 0, 1, 1, 0, 0, 1)
+DEF_TXT_SW = (1, 1, 1, 1, 1, 1, 0, 0, 2)
+DEF_XLS_SW = (1, 1, 1, 1, 1, 1, 1, 0, 3)
