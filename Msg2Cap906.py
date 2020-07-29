@@ -338,7 +338,7 @@ def GUI(tt,ttX):
     var9 = IntVar()
     var10 = IntVar()
     var11 = IntVar()
-    defFont = 'Courier 8'
+    defFont = 'Consolas 9'# 'Segoe 9'
 
     if '.txt' in ext:
         switches = DEF_TXT_SW
@@ -369,13 +369,14 @@ def GUI(tt,ttX):
     textX = Text(frameX, height = 2, width = len(tt)+5, bd = 0, font = defFont, wrap = WORD, highlightbackground = 'yellow')
     textX.insert(1.0, ttX)
 
-    frameLb = LabelFrame(window, bd=0, fg='blue', text='Options:')  # background = 'white',
+    frameLb = LabelFrame(window, bd=2, fg='blue', text='Options:')  # background = 'white',
     listbox1 = Listbox(frameLb, height = 8, width = 15, selectmode = EXTENDED, font = defFont )
-    list1 = ['Option №0','Option №1','Option №2','Option №3','Option №4','Option №5','Option №6','Option №7','Option №8','Option №9', 'Option №10','Option №11']
+    list1 = ['Option №0','Option №1','Option №2','Option №3','Option №4','Option №5','Option №6','Option №7','Option №8',
+             'Option №9', 'Option №10','Option №11','Option №12','Option №13','Option №14','Option №15']
     for i in list1: listbox1.insert(END,i)
 
-    frameCB = LabelFrame(window, background = 'white', bd = 2, fg = 'blue', text = 'Parsing options:')
-    check1 = Checkbutton(frameCB, text = SwitchesNames[0], activeforeground = 'red',font = defFont, variable = var1, onvalue = 1, offvalue = 0 ,command = c0)
+    frameCB = LabelFrame(window, bd = 2, fg = 'blue', text = 'Parsing options:') # , background = 'white'
+    check1 = Checkbutton(frameCB, text = SwitchesNames[0], font = defFont, variable = var1, onvalue = 1, offvalue = 0 ,command = c0)
     check2 = Checkbutton(frameCB, text = SwitchesNames[1], font = defFont, variable = var2, onvalue = 1, offvalue = 0 ,command = c0)
     check3 = Checkbutton(frameCB, text = SwitchesNames[2], font = defFont, variable = var3, onvalue = 1, offvalue = 0 ,command = c0)
     check4 = Checkbutton(frameCB, text = SwitchesNames[3], font = defFont, variable = var4, onvalue = 1, offvalue = 0 ,command = c0)
