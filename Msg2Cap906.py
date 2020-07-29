@@ -1,4 +1,4 @@
-from  Patterns import *
+from Patterns import *
 from tkinter import *
 import os
 import sys
@@ -623,9 +623,12 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         # fnO = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
         fnO = os.path.splitext(fn)[0] + '_parsed.txt'
         logging.info('Output text file: %s', fnO)
+
         fn1, fn1X, fl, sl = GUI(fnO, os.path.splitext(fn)[0] + '_parsed.xlsx')  #ttt, tttX, vv, ls
         #switch to the parser's loger
         logger = logging.getLogger('_Parser')
+
+# ----------------------------------------------------------------------------------------------------------------------
         # Translate  GUI outputs
         fgi_out = bool(fl[0])
         geran_out = bool(fl[1])
@@ -634,41 +637,43 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         R14_enabled = bool(fl[4])
         table_format = bool(fl[5])
         BandsFilter = bool(fl[6])
-        fn1 = fn1.rstrip('\n')
-        if fn1 == '':
-            fnO = os.path.splitext(fn)[0]+'_parsed.txt'
-            logging.warning('Returned NO output TXT file name, it changed to: %s', fnO)
-        else:
-            fnO = fn1
-            logging.info('Output TXT file changed in GUI to: %s', fn1)
-        fn1X = fn1X.rstrip('\n')
-        if fn1X == '':
-            fnX = os.path.splitext(fn)[0] + '_parsed.xlsx'
-            logging.warning('Returned NO output XLS file name, it changed to: %s', fnX)
-        else:
-            fnX = fn1X
-            logging.info('Output XLS file changed in GUI to: %s', fnX)
         if fl[10] == 1: # Screen output only
             txt_output = False
             Excel_output = False
+
         elif fl[10] == 2: # txt output only
             txt_output = True
+            fn1 = fn1.rstrip('\n')
+            if fn1 == '':
+                fnO = os.path.splitext(fn)[0] + '_parsed.txt'
+                logging.warning('Returned NO output TXT file name, it changed to: %s', fnO)
+            else:
+                fnO = fn1
+                logging.info('Output TXT file changed in GUI to: %s', fn1)
             Excel_output = False
+
         elif fl[10] == 3: #XLS output + TXT output
             txt_output = True
             Excel_output = True
+            fn1X = fn1X.rstrip('\n')
+            if fn1X == '':
+                fnX = os.path.splitext(fn)[0] + '_parsed.xlsx'
+                logging.warning('Returned NO output XLS file name, it changed to: %s', fnX)
+            else:
+                fnX = fn1X
+                logging.info('Output XLS file changed in GUI to: %s', fnX)
         else: # Unknown value returned from GUI
             logging.error('Output Rbutton = %s is out of range', fl[10])
             assert(1<=fl[10]<=3)
-
         logging.info('Output text file changed to: %s', fn1)
         logging.info('Selected entries: %s', sl)
         logging.info('Switches: %s', fl)
+# ----------------------------------------------------------------------------------------------------------------
         s = f.readlines()
         f.close()
     # Should be '.xls','.xlsx','.xlsm'
     elif ('xls' in ext):
-        Excel_output = True
+        # Excel_output = True
         XLwithmacro = ('.xlsm','.xltm')
         XLwithoutmacro = ('.xls','.xlsx','.xltx')
         # меняем логгер на XLS
@@ -682,12 +687,18 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         else:
             logging.error('Extension %s is not known', ext)
             exit(1)
+
+        fnO = os.path.splitext(fn)[0]+ '_parsed.txt'
         fnX = os.path.splitext(fn)[0]+'_parsed'+ext
         logging.info('Output XLS file: %s', fnX)
+
+
         fn1, fn1X, fl, sl = GUI(fnO,fnX)
         #switch to the parser's loger
         logger = logging.getLogger('_XLSproc')
+
         # Translate  GUI outputs
+        # ----------------------------------------------------------------------------------------------------------------------
         fgi_out = bool(fl[0])
         geran_out = bool(fl[1])
         utran_out = bool(fl[2])
@@ -695,28 +706,44 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         R14_enabled = bool(fl[4])
         table_format = bool(fl[5])
         BandsFilter = bool(fl[6])
+
+        if fl[10] == 1:  # Screen output only
+            txt_output = False
+            Excel_output = False
+
+        elif fl[10] == 2:  # txt output only
+            txt_output = True
+
+            fn1 = fn1.rstrip('\n')
+            if fn1 == '':
+                fnO = os.path.splitext(fn)[0] + '_parsed.txt'
+                logging.warning('Returned NO output TXT file name, it changed to: %s', fnO)
+            else:
+                fnO = fn1
+                logging.info('Output TXT file changed in GUI to: %s', fn1)
+            Excel_output = False
+
+        elif fl[10] == 3:  # XLS output + TXT output
+            txt_output = True
+            Excel_output = True
+
+            fn1X = fn1X.rstrip('\n')
+            if fn1X == '':
+                fnX = os.path.splitext(fn)[0] + '_parsed.xlsx'
+                logging.warning('Returned NO output XLS file name, it changed to: %s', fnX)
+            else:
+                fnX = fn1X
+                logging.info('Output XLS file changed in GUI to: %s', fnX)
+
+        else:  # Unknown value returned from GUI
+            logging.error('Output Rbutton = %s is out of range', fl[10])
+            assert (1 <= fl[10] <= 3)
+        logging.info('Output text file changed to: %s', fnO)
+        logging.info('Output XLS file: %s', fnX)
         logging.info('Selected entries: %s', sl)
         logging.info('Switches: %s', fl)
+        # ----------------------------------------------------------------------------------------------------------------
 
-        # Output TXT file name is the same like input filename, but with '_parsed' suffix and '.txt' extension
-        fn1 = fn1.rstrip('\n')
-        if fn1 == '':
-            fnO = os.path.splitext(fn)[0]+'_parsed.txt'
-            logging.info('Returned NO output TXT file name, it changed to: %s', fnO)
-        else:
-            fnO = fn1
-            logging.info('Output TXT file changed in GUI to: %s', fn1)
-
-        fn1X = fn1X.rstrip('\n')
-        if fn1X == '':
-            fnX = os.path.splitext(fn)[0] + '_parsed.xlsx'
-            logging.info('Returned NO output XLS file name, it changed to: %s', fnX)
-        else:
-            fnX = fn1X
-            logging.info('Output XLS file changed in GUI to: %s', fnX)
-
-        logging.info('Output text file: %s', fnO)
-        logging.info('Output XLS file: %s', fn1X)
         logger.info('Loading device capabilities from file %s', fn)
         logger.info('Sheets: %s', book.sheetnames)
         sheetIn = "Capabilities"
