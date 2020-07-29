@@ -145,21 +145,23 @@ UsedPat = ['31', '71', '72', '32', '3171', '3271', '3172', '3272', '7171', '7131
 UsedPatGreen = ['71', '72', '73', '3171', '7131', '3172', '7231', '3272', '7232', '3173', '7331', '7132', '7332', '3273']
 UsedPatCA7C = ['72']
 
-SwitchesNames = ('   FGI out   ', #0
-                 '  GERAN out  ', #1
-                 '  UTRAN out  ', #2
-                 ' 2g3g Binary ', #3
-                 ' R14_enabled ', #4
-                 'Table output ', #5
-                 ' BandsFilter ', #6
-                 '    spare    ') #7
-                                  # Bit 8:
+SwitchesNames = ('   FGI out   ', #0    var1
+                 '  GERAN out  ', #1    var2
+                 '  UTRAN out  ', #2    va3
+                 ' 2g3g Binary ', #3    var4
+                 ' R14_enabled ', #4    var5
+                 'Table output ', #5    var6
+                 ' BandsFilter ', #6    var7
+                 ' ----------- ', #7    var8
+                 ' ----------- ', #8    var9
+                 ' ----------- ') #9    var10
+                                  # 10: var11
                                     # screen_out = 1
                                     # txt_output = 2
                                     # Excel_out = 3
 # Switches defaults
 # =================
-#bits         0  1  2  3  4  5  6  7  8
-DEF_SCR_SW = (1, 1, 1, 0, 1, 1, 0, 0, 1)
-DEF_TXT_SW = (1, 1, 1, 1, 1, 1, 0, 0, 2)
-DEF_XLS_SW = (1, 1, 1, 1, 1, 1, 1, 0, 3)
+#bits         0  1  2  3  4  5  6  7  8  9  10
+DEF_SCR_SW = (1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1)
+DEF_TXT_SW = (1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2)
+DEF_XLS_SW = (1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 3)

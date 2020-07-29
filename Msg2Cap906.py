@@ -227,11 +227,12 @@ def Conv2Bits(Captxt):
                 CapBits.append("0")
     return CapBits
 
-def GUI(tt):
+def GUI(tt,ttX):
     """
     This is GUI for getting switches values and checking output file name and path
     :param tt: output file name
     : return: ttt: [possibly] changed output text file name
+              tttX:[possibly] changed output XLS file name
               vv: values list of the switches snd radiobuttons
               ls: list of selected elements of list (not used yet)
     """
@@ -242,8 +243,11 @@ def GUI(tt):
         ls = []
         logger.info('Button1 pressed')
         global ttt
-        ttt = text1.get('1.0', END)
-        logger.info('File name changed to: %s', ttt)
+        global tttX
+        ttt = textT.get('1.0', END)
+        tttX = textX.get('1.0', END)
+        logger.info('TXT File name changed to: %s', ttt)
+        logger.info('XLS File name changed to: %s', tttX)
         vv.append(var1.get())
         vv.append(var2.get())
         vv.append(var3.get())
@@ -253,6 +257,8 @@ def GUI(tt):
         vv.append(var7.get())
         vv.append(var8.get())
         vv.append(var9.get())
+        vv.append(var10.get())
+        vv.append(var11.get())
         logger.info('Switches: %s', vv)
         ls = listbox1.curselection()
         logger.info('List: %s', ls)
@@ -264,7 +270,52 @@ def GUI(tt):
         exit(0)
 
     def c0():
-        logger.info('1_Checked %s | Radio = %s', var1.get(), var9.get())
+        logger.info('Radio = %s',var11.get())
+
+        if var11.get()==3: # TXT+XLS
+            frameT.pack(side='top', expand = TRUE)
+            textT.pack(side='top', fill='both')
+            frameX.pack(side='top', expand = TRUE)
+            textX.pack(side='top', fill='both')
+
+        elif var11.get()==2: # TXT only
+            frameT.pack(side='top', expand=TRUE)
+            textT.pack(side='top', fill='both')
+            # frameX.pack_forget()
+            textX.pack_forget()
+
+        elif var11.get()==1: # Screen only, no files
+            # frameT.pack_forget()
+            textT.pack_forget()
+            # frameX.pack_forget()
+            textX.pack_forget()
+
+        else:
+            logger.error("No output choosen")
+            window.destroy()
+            exit(0)
+
+    def c1():
+        logger.info('Radio = %s',var11.get())
+        var7.set(0)
+        textT.pack_forget()
+        textX.pack_forget()
+
+    def c2():
+        logger.info('Radio = %s',var11.get())
+        var7.set(0)
+        frameT.pack(side='top', expand=TRUE)
+        textT.pack(side='top', fill='both')
+        textX.pack_forget()
+
+    def c3():
+        logger.info('Radio = %s',var11.get())
+        var7.set(1)
+        frameT.pack(side='top', expand = TRUE)
+        textT.pack(side='top', fill='both')
+        frameX.pack(side='top', expand = TRUE)
+        textX.pack(side='top', fill='both')
+
 
     def ppp(event):
         logger.info('Button1 pressed')
@@ -285,6 +336,9 @@ def GUI(tt):
     var7 = IntVar()
     var8 = IntVar()
     var9 = IntVar()
+    var10 = IntVar()
+    var11 = IntVar()
+    defFont = 'Courier 8'
 
     if '.txt' in ext:
         switches = DEF_TXT_SW
@@ -301,44 +355,65 @@ def GUI(tt):
     var7.set(switches[6])
     var8.set(switches[7])
     var9.set(switches[8])
-
+    var10.set(switches[9])
+    var11.set(switches[10])
     window.title("Msg2Cap")
-    text1 = Text(window, height = 2, width = len(tt)+5, font = 'Courier 10', wrap = WORD)
-    listbox1 = Listbox(window, height = 8, width = 15, selectmode = EXTENDED)
-    text1.insert(1.0, tt)
-    list1 = ['Выбор №0','Выбор №1','Выбор №2','Выбор №3','Выбор №4','Выбор №5','Выбор №6','Выбор №7','Выбор №8','Выбор №9', 'Выбор №10','Выбор №11']
+
+    frameO = LabelFrame(window,  bd = 2, fg = 'blue', text = 'Output:') # background = 'white',
+
+    frameT = LabelFrame(frameO,  bd = 2, fg = 'blue', text = 'TXT file name:') # background = 'white',
+    textT = Text(frameT, height = 2, width = len(tt)+5, bd = 0, font = defFont, wrap = WORD, highlightcolor = 'yellow')
+    textT.insert(1.0, tt)
+
+    frameX = LabelFrame(frameO, bd = 2, fg = 'blue', text = 'XLS file name:') # background = 'white',
+    textX = Text(frameX, height = 2, width = len(tt)+5, bd = 0, font = defFont, wrap = WORD, highlightbackground = 'yellow')
+    textX.insert(1.0, ttX)
+
+    frameLb = LabelFrame(window, bd=0, fg='blue', text='Options:')  # background = 'white',
+    listbox1 = Listbox(frameLb, height = 8, width = 15, selectmode = EXTENDED, font = defFont )
+    list1 = ['Option №0','Option №1','Option №2','Option №3','Option №4','Option №5','Option №6','Option №7','Option №8','Option №9', 'Option №10','Option №11']
     for i in list1: listbox1.insert(END,i)
-    frame2 = Frame(window, background = 'white', bd = 0)
-    check1 = Checkbutton(frame2, text = SwitchesNames[0], font = 'Courier 10', variable = var1, onvalue = 1, offvalue = 0 ,command = c0)
-    check2 = Checkbutton(frame2, text = SwitchesNames[1], font = 'Courier 10', variable = var2, onvalue = 1, offvalue = 0)
-    check3 = Checkbutton(frame2, text = SwitchesNames[2], font = 'Courier 10', variable = var3, onvalue = 1, offvalue = 0)
-    check4 = Checkbutton(frame2, text = SwitchesNames[3], font = 'Courier 10', variable = var4, onvalue = 1, offvalue = 0)
-    check5 = Checkbutton(frame2, text = SwitchesNames[4], font = 'Courier 10', variable = var5, onvalue = 1, offvalue = 0)
-    check6 = Checkbutton(frame2, text = SwitchesNames[5], font = 'Courier 10', variable = var6, onvalue = 1, offvalue = 0)
-    check7 = Checkbutton(frame2, text = SwitchesNames[6], font = 'Courier 10', variable = var7, onvalue = 1, offvalue = 0)
-    check8 = Checkbutton(frame2, text = SwitchesNames[7], font = 'Courier 10', variable = var8, onvalue = 1, offvalue = 0)
-    rbutton1 = Radiobutton( window, text = ' Screen ', font = 'Courier 10', variable = var9, value = 1, command = c0)
-    rbutton2 = Radiobutton( window, text = 'TXT file', font = 'Courier 10', variable = var9, value = 2, command = c0)
-    rbutton3 = Radiobutton( window, text = 'XLS file', font = 'Courier 10', variable = var9, value = 3, command = c0)
-    frame1 = Frame(window, background = 'gray', bd = 2)
-    button1 = Button(frame1, text = 'Запуск',
+
+    frameCB = LabelFrame(window, background = 'white', bd = 2, fg = 'blue', text = 'Parsing options:')
+    check1 = Checkbutton(frameCB, text = SwitchesNames[0], activeforeground = 'red',font = defFont, variable = var1, onvalue = 1, offvalue = 0 ,command = c0)
+    check2 = Checkbutton(frameCB, text = SwitchesNames[1], font = defFont, variable = var2, onvalue = 1, offvalue = 0 ,command = c0)
+    check3 = Checkbutton(frameCB, text = SwitchesNames[2], font = defFont, variable = var3, onvalue = 1, offvalue = 0 ,command = c0)
+    check4 = Checkbutton(frameCB, text = SwitchesNames[3], font = defFont, variable = var4, onvalue = 1, offvalue = 0 ,command = c0)
+    check5 = Checkbutton(frameCB, text = SwitchesNames[4], font = defFont, variable = var5, onvalue = 1, offvalue = 0 ,command = c0)
+    check6 = Checkbutton(frameCB, text = SwitchesNames[5], font = defFont, variable = var6, onvalue = 1, offvalue = 0 ,command = c0)
+    check7 = Checkbutton(frameCB, text = SwitchesNames[6], font = defFont, variable = var7, onvalue = 1, offvalue = 0 ,command = c0)
+    check8 = Checkbutton(frameCB, text = SwitchesNames[7], font = defFont, variable = var8, onvalue = 1, offvalue = 0 ,command = c0)
+    check9 = Checkbutton(frameCB, text = SwitchesNames[8], font = defFont, variable = var9, onvalue = 1, offvalue = 0 ,command = c0)
+    check10 = Checkbutton(frameCB, text = SwitchesNames[9],font = defFont, variable = var10, onvalue = 1, offvalue = 0 ,command = c0)
+
+    frameRB = LabelFrame(window,  bd = 2, fg = 'blue', text = 'Output:', width = len(tt)+5) # background = 'white',
+    rbutton1 = Radiobutton( frameRB, text = ' Screen ', overrelief = RAISED, font = defFont, variable = var11, value = 1, command = c1)
+    rbutton2 = Radiobutton( frameRB, text = 'TXT file', overrelief = RAISED, font = defFont, variable = var11, value = 2, command = c2)
+    rbutton3 = Radiobutton( frameRB, text = ' XLS+TXT', overrelief = RAISED,  font = defFont, variable = var11, value = 3, command = c3)
+
+    frameBt = Frame(window, background = 'white', bd = 2)
+    button1 = Button(frameBt, text = 'Запуск',
             # background = "#999",  # фоновый цвет кнопки
             activebackground= "#999",
             foreground = "#0f0",  # цвет текста
             padx = "5",  # отступ от границ до содержимого по горизонтали
             pady = "4",  # отступ от границ до содержимого по вертикали
             font = "10",  # высота шрифта
+            overrelief = RAISED,
             command = p1)
-    button2 = Button(frame1, text = 'Отмена',
+    button2 = Button(frameBt, text = 'Отмена',
              background="#777",  # фоновый цвет кнопки
              foreground="#f00",  # цвет текста
              padx="5",  # отступ от границ до содержимого по горизонтали
              pady="4",  # отступ от границ до содержимого по вертикали
              font="10",  # высота шрифта
+             overrelief=RAISED,
              command = p2)
-    text1.pack(side = 'top', fill = 'both')
+
+    frameLb.pack(side = 'right', fill = 'y', expand = TRUE)
     listbox1.pack(side = 'right', fill = 'y', expand = TRUE)
-    frame2.pack(side = 'left')
+
+    frameCB.pack(side = 'left')
     check1.pack(side = 'top')
     check2.pack(side = 'top')
     check3.pack(side = 'top')
@@ -347,14 +422,31 @@ def GUI(tt):
     check6.pack(side = 'top')
     check7.pack(side = 'top')
     check8.pack(side = 'top')
-    rbutton1.pack( fill = 'both', expand = TRUE)
-    rbutton2.pack(fill = 'y', expand = TRUE)
-    rbutton3.pack(fill = 'y', expand = TRUE)
-    frame1.pack(side = 'top')
+    check9.pack(side = 'top')
+    check10.pack(side = 'top')
+
+    frameRB.pack(side = 'top')
+    rbutton1.pack(side = 'top', fill = 'both', expand = TRUE)
+    rbutton2.pack(side = 'top',fill = 'both', expand = TRUE)
+    rbutton3.pack(side = 'top',fill = 'both', expand = TRUE)
+
+    frameBt.pack(side = 'bottom')
     button1.pack(side = 'left')
     button2.pack(side = 'right')
+
+    frameO.pack(side = 'bottom', expand = TRUE)
+
+    frameT.pack(side = 'top', expand = TRUE)
+    textT.pack(side = 'top', fill = 'both')
+
+    frameX.pack(side='top', expand=TRUE)
+    textX.pack(side = 'top', fill = 'both')
+
+    if var11.get() != 3:
+        window.after(100, textX.pack_forget)
+
     window.wait_window(window)
-    return ttt,vv,ls
+    return ttt, tttX, vv, ls
 
 def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, utranoutSW):
     """
@@ -527,9 +619,10 @@ if os.path.exists(fn):  # если файл трассировки сущест�
     # Should be '.txt'
     if ('txt' in ext):
         # Add prefix 'Parsed_' to the input file name for the ouput (parsed) filename (with the same file path)
-        fnO = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
+        # fnO = os.path.join(os.path.split(fn)[0], 'Parsed_' + os.path.split(fn)[1])
+        fnO = os.path.splitext(fn)[0] + '_parsed.txt'
         logging.info('Output text file: %s', fnO)
-        fn1, fl, sl = GUI(fnO) #ttt, vv, ls
+        fn1, fn1X, fl, sl = GUI(fnO, os.path.splitext(fn)[0] + '_parsed.xlsx')  #ttt, tttX, vv, ls
         #switch to the parser's loger
         logger = logging.getLogger('_Parser')
         # Translate  GUI outputs
@@ -540,20 +633,32 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         R14_enabled = bool(fl[4])
         table_format = bool(fl[5])
         BandsFilter = bool(fl[6])
-        fnO = fn1.rstrip('\n')
-        if fl[8] == 1: # Screen output only
+        fn1 = fn1.rstrip('\n')
+        if fn1 == '':
+            fnO = os.path.splitext(fn)[0]+'_parsed.txt'
+            logging.warning('Returned NO output TXT file name, it changed to: %s', fnO)
+        else:
+            fnO = fn1
+            logging.info('Output TXT file changed in GUI to: %s', fn1)
+        fn1X = fn1X.rstrip('\n')
+        if fn1X == '':
+            fnX = os.path.splitext(fn)[0] + '_parsed.xlsx'
+            logging.warning('Returned NO output XLS file name, it changed to: %s', fnX)
+        else:
+            fnX = fn1X
+            logging.info('Output XLS file changed in GUI to: %s', fnX)
+        if fl[10] == 1: # Screen output only
             txt_output = False
             Excel_output = False
-        elif fl[8] == 2: # txt output only
+        elif fl[10] == 2: # txt output only
             txt_output = True
             Excel_output = False
-        elif fl[8] == 3: #XLS output + TXT output
+        elif fl[10] == 3: #XLS output + TXT output
             txt_output = True
             Excel_output = True
-            fnX = os.path.splitext(fn)[0] + '_parsed' + '.xlsx'
         else: # Unknown value returned from GUI
-            logging.error('Output Rbutton = %s is out of range', fl[8])
-            assert(1<=fl[8]<=3)
+            logging.error('Output Rbutton = %s is out of range', fl[10])
+            assert(1<=fl[10]<=3)
 
         logging.info('Output text file changed to: %s', fn1)
         logging.info('Selected entries: %s', sl)
@@ -578,7 +683,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
             exit(1)
         fnX = os.path.splitext(fn)[0]+'_parsed'+ext
         logging.info('Output XLS file: %s', fnX)
-        fn1, fl, sl = GUI(fnX)
+        fn1, fn1X, fl, sl = GUI(fnO,fnX)
         #switch to the parser's loger
         logger = logging.getLogger('_XLSproc')
         # Translate  GUI outputs
@@ -589,13 +694,28 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         R14_enabled = bool(fl[4])
         table_format = bool(fl[5])
         BandsFilter = bool(fl[6])
-        fnX = fn1.rstrip('\n')
-        logging.info('Output XLS file changed to: %s', fn1)
         logging.info('Selected entries: %s', sl)
         logging.info('Switches: %s', fl)
+
         # Output TXT file name is the same like input filename, but with '_parsed' suffix and '.txt' extension
-        fnO = os.path.splitext(fn)[0]+'_parsed.txt'
+        fn1 = fn1.rstrip('\n')
+        if fn1 == '':
+            fnO = os.path.splitext(fn)[0]+'_parsed.txt'
+            logging.info('Returned NO output TXT file name, it changed to: %s', fnO)
+        else:
+            fnO = fn1
+            logging.info('Output TXT file changed in GUI to: %s', fn1)
+
+        fn1X = fn1X.rstrip('\n')
+        if fn1X == '':
+            fnX = os.path.splitext(fn)[0] + '_parsed.xlsx'
+            logging.info('Returned NO output XLS file name, it changed to: %s', fnX)
+        else:
+            fnX = fn1X
+            logging.info('Output XLS file changed in GUI to: %s', fnX)
+
         logging.info('Output text file: %s', fnO)
+        logging.info('Output XLS file: %s', fn1X)
         logger.info('Loading device capabilities from file %s', fn)
         logger.info('Sheets: %s', book.sheetnames)
         sheetIn = "Capabilities"
@@ -1254,11 +1374,11 @@ with open(ff, 'w') as fO:
                         # Example: Sum of comb.#3 (4ccs)
                         SumComb[0] = 'SUM of comb.# ' + str(prevComb) + ' (' + str(ccinComb) + 'ccs)'
                         RowInSheet+=1  # добавляем row для вывода суммы закончившейся комбинации
-                        if CCCinUsed:
+                        if CCCinUsed and BandsFilter:
                             clrCC = C_LightYellow
                         else:
                             clrCC = C_LBlue
-                        if CCCGreen:
+                        if CCCGreen and BandsFilter:
                             clrCC = C_LightGreen
                         for j in range(11): # вывод суммы закончившейся комбинации
                             FillCellSum(RowInSheet,j+1,SumComb[j], sheet, clrCC)
@@ -1274,18 +1394,18 @@ with open(ff, 'w') as fO:
                 SumComb[0] = 'SUM of comb.# ' + str(prevComb) + ' (' + str(ccinComb) + 'ccs)'
                 CCC1 = CCC1 + (str(CCs[i][1]) + str(CCs[i][4]))  # Band + количество смежных несущих в бэнде, например, '31', '72'
                 CCCinUsed = CheckCCCinUsed(CCC1, UsedPat)
-                if CCCinUsed:
+                if CCCinUsed and BandsFilter:
                     clrCC = C_LightYellow
                 else:
                     clrCC = C_LBlue
-                if CCCGreen:
+                if CCCGreen and BandsFilter:
                     clrCC = C_LightGreen
                 for j in range(11): # вывод суммы последней комбинации
                     FillCellSum(RowInSheet, j+1, SumComb[j], sheet, clrCC)
                 logging.info('Вкладка Cap.Info заполнена')
                 book.save(fnX)
                 if os.path.exists(fnX):
-                    logging.info('Копия файла  успешно сохранена в файл %s', fnX)
+                    logging.info('Копия файла успешно сохранена в файл %s', fnX)
                 else:
                     logging.info('Файл будет сохранён локально, в каталоге программы %s', 'LatestParsed'+ext)
                     book.save('LatestParsed'+ext)
