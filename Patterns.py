@@ -162,7 +162,7 @@ SwitchesNames = ('   FGI out   ', #0    var1
 
 # Switches defaults
 # =================
-#bits (fl[)   0  1  2  3  4  5  6  7  8  9  10
+#bits (fl[])  0  1  2  3  4  5  6  7  8  9  10
 DEF_SCR_SW = (1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1)
 DEF_TXT_SW = (1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2)
 DEF_XLS_SW = (1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 3)

@@ -342,7 +342,7 @@ def GUI(tt,ttX):
 
     if '.txt' in ext:
         switches = DEF_TXT_SW
-    elif 'xlsx' in ext:
+    elif 'xls' in ext:
         switches = DEF_XLS_SW
     else:
         switches = DEF_SCR_SW
