@@ -24,9 +24,6 @@ table_format = True
 Excel_output = False
 BandsFilter = True
 
-# FsegoeUI8 = tkFont.Font(family='Segoe UI', size=8, weight='bold')
-FsegoeUI8 = Font('Segoe UI', 8, 'bold')
-
 # VARs
 TMF = False
 eNB = False
@@ -342,7 +339,7 @@ def GUI(tt,ttX):
     var9 = IntVar()
     var10 = IntVar()
     var11 = IntVar()
-    defFont = ('Consolas', 9, 'bold')
+    defFont = F_CONSOLAS9B
     #FsegoeUI8 #'Consolas 9' || 'Segoe 9'//'Segoe UI'
 
     if '.txt' in ext:
@@ -399,20 +396,22 @@ def GUI(tt,ttX):
 
     frameBt = Frame(window, background = 'white', bd = 2)
     button1 = Button(frameBt, text = 'Запуск',
-            # background = "#999",  # фоновый цвет кнопки
+            background = "#eee",  # фоновый цвет кнопки
             activebackground= "#999",
-            foreground = "#0f0",  # цвет текста
+            foreground = "#080",  # цвет текста
+            font='System 8',
             padx = "5",  # отступ от границ до содержимого по горизонтали
             pady = "4",  # отступ от границ до содержимого по вертикали
-            font = "10",  # высота шрифта
+            # font = "10",  # высота шрифта
             overrelief = RAISED,
             command = p1)
     button2 = Button(frameBt, text = 'Отмена',
-             background="#777",  # фоновый цвет кнопки
-             foreground="#f00",  # цвет текста
+             background="#ddd",  # фоновый цвет кнопки
+             foreground="#800",  # цвет текста
+             font='System 8',
              padx="5",  # отступ от границ до содержимого по горизонтали
              pady="4",  # отступ от границ до содержимого по вертикали
-             font="10",  # высота шрифта
+             # font="10",  # высота шрифта
              overrelief=RAISED,
              command = p2)
 

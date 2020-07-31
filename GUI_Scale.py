@@ -22,20 +22,25 @@ def p1():
     print(window.AttDecimal.get())
     label.config(text = selection)
     # window.label.set(selection)
+
 def spc():
     """
     Handler for Spinbox vidgets, read values of spinboxes and Scale, Send it to the Label widget for refreshing its value
     :param: none
     :return: none
     """
+    window.AttInteger.set(window.AttDecs.get()*10+window.AttOnes.get())
     selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+window.AttDecimal.get())+'dB'
     # print(window.AttDecimal.get())
     label.config(text = selection)
+
 def scp(v):
     """
     Handler for Scale vidget
     :param: v Scale value (String)
     """
+    window.AttOnes.set(window.AttInteger.get() % 10) # единицы = остаток от деления на 10
+    window.AttDecs.set(window.AttInteger.get() // 10) # Десятки = результат целочисленного деления на 10
     selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+window.AttDecimal.get())+'dB'
     selection = window.Selected.get() + ": Attenuation = " + str( float(v) + window.AttDecimal.get())+'dB'
     print(v)
@@ -45,6 +50,8 @@ window = Tk()
 window.AttInteger = DoubleVar()
 var11 = StringVar()
 window.AttDecimal = DoubleVar()
+window.AttOnes = IntVar()
+window.AttDecs = IntVar()
 window.Selected = StringVar()
 ATTs = ('Att #01', 'Att #02', 'Att #03', 'Att #04', 'Att #05', 'Att #06', 'Att #07', 'Att #08', 'Att #09', 'Att #10', 'Att #11', 'Att #12')
 
@@ -61,16 +68,38 @@ label = Label(frame1,
               background = 'white',
               font = 'System 8',
               text = 'dB')
-spin = Spinbox(window,
-               text="dB",
-               width=8,
+spw = LabelFrame (window, bd = 2, fg = 'blue', text = 'Select attenuation:')
+spin = Spinbox(spw,
+               text="0.1 dB",
+               width=4,
                from_=0,
                to=0.9,
                increment = 0.1,
+               format='%1.1f',
                command = spc,
                textvariable = window.AttDecimal,
                wrap=True)
-spin2 = Spinbox(frame1,
+spin1 = Spinbox(spw,
+               text="1 dB",
+               width=4,
+               from_=0,
+               to=9,
+               increment = 1,
+               # format='%1s',
+               command = spc,
+               textvariable = window.AttOnes,
+               wrap=True)
+spin10 = Spinbox(spw,
+               text="10 dB",
+               width=4,
+               from_=0,
+               to=6,
+               increment = 1,
+               # format='%1f',
+               command = spc,
+               textvariable = window.AttDecs,
+               wrap=True)
+spinLab = Spinbox(frame1,
                 values=sorted(ATTs),
                 width=8,
                 textvariable=window.Selected,
@@ -116,12 +145,14 @@ button2 = Button(frame2, text = 'Cancel',
                          command = p2)
 
 frame1.pack(side = 'top')
-spin2.pack(side = 'top')
+spinLab.pack(side = 'top')
 label.pack(side = 'bottom')
 scale.pack(anchor = CENTER, side = 'bottom')
 frame2.pack(side = 'bottom')
 button1.pack(side = 'left')
 button2.pack(side = 'right')
-spin.pack(side = 'bottom')
-
+spw.pack(side = 'bottom')
+spin10.pack(side = 'left')
+spin1.pack(side = 'left')
+spin.pack(side = 'left')
 window.mainloop()

@@ -126,19 +126,24 @@ FGILine2 = "0123456789ABCDEF0123456789ABCDEF0"
 FGILine3 = "+---------------+---------------+"
 
 
-# Custom Fonts, Colors and Fills
+# Custom openpyxl Fonts, Colors and Fills
 FMono = 'Lucida Console'
 FSimple = 'GT Walsheim Pro Trial Lt'
 FBold = 'GT Walsheim v2 Manual Black'
-C_LightYellow = '00FFFFA0'
-C_LightGreen =  '00A0FFA0'
-C_MGreen =      '0000A000'
-C_LBlue =       '00C0C0FF'
-DARKBLUE = '00000077'
-DARKRED =  '00770000'
-YELLOW =   '00FFFF00'
-BLACK  =   '00000000'
 
+
+C_LightYellow = '00FFFFA7'
+C_LightGreen =  '00B0FF64'
+C_MGreen =      '0000A000'
+C_LBlue =       '00BEF1F8'
+DARKBLUE =      '00000040'
+DARKRED =       '00770000'
+YELLOW =        '00FFFF00'
+BLACK  =        '00000000'
+
+# Custom tkinter Fonts:  FsegoeUI8 = tkFont.Font(family='Segoe UI', size=8, weight='bold')
+F_SEGOEUI8B =  ('Segoe UI', 8, 'bold')
+F_CONSOLAS9B = ('Consolas', 9, 'bold')
 
 # Bands filters and XLS conclusions base
 PrimaryEUTRABand = 7 # Carrier of LTE band for which "Supported" decision should be made about 256QAM or 4/8 layers supporting
