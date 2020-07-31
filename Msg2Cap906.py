@@ -1,5 +1,6 @@
 from Patterns import *
 from tkinter import *
+# from tkinter import font
 import os
 import sys
 import openpyxl
@@ -22,6 +23,9 @@ txt_output = False
 table_format = True
 Excel_output = False
 BandsFilter = True
+
+# FsegoeUI8 = tkFont.Font(family='Segoe UI', size=8, weight='bold')
+FsegoeUI8 = Font('Segoe UI', 8, 'bold')
 
 # VARs
 TMF = False
@@ -158,7 +162,7 @@ def  FillCellSum(r,c,v,ws,clr):
     return = worksheet with with filled cells
     """
     ws.cell(row=r, column=c, value=v)
-    ws.cell(row=r, column=c).font = Font(name=FSimple,size=12, underline='single', color=colors.DARKRED, bold=True, italic=True)
+    ws.cell(row=r, column=c).font = Font(name=FSimple,size=12, underline='single', color=DARKRED, bold=True, italic=True)
     ws.cell(row=r, column=c).fill = PatternFill(fill_type='solid', start_color=clrCC , end_color=clrCC)
     return ws
 
@@ -174,7 +178,7 @@ def  FillCellNorm(r,c,v,ws):
     return = worksheet with filled cells
     """
     ws.cell(row=r, column=c, value=v)
-    ws.cell(row=r, column=c).font = Font(name=FSimple,size=10, underline='none', color=colors.DARKBLUE, bold=False, italic=True)
+    ws.cell(row=r, column=c).font = Font(name=FSimple,size=10, underline='none', color=DARKBLUE, bold=False, italic=True)
     return ws
 
 def CollectPatt(Slist, Patt, corr):
@@ -338,7 +342,8 @@ def GUI(tt,ttX):
     var9 = IntVar()
     var10 = IntVar()
     var11 = IntVar()
-    defFont = 'Consolas 9'# 'Segoe 9'
+    defFont = ('Consolas', 9, 'bold')
+    #FsegoeUI8 #'Consolas 9' || 'Segoe 9'//'Segoe UI'
 
     if '.txt' in ext:
         switches = DEF_TXT_SW
@@ -637,6 +642,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         R14_enabled = bool(fl[4])
         table_format = bool(fl[5])
         BandsFilter = bool(fl[6])
+
         if fl[10] == 1: # Screen output only
             txt_output = False
             Excel_output = False
@@ -1293,14 +1299,14 @@ with open(ff, 'w') as fO:
                         sheet['B8'] = 'UL'
                     else:
                         sheet['B8'] = ''
-                sheet['B8'].font = Font(name=FSimple,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['B8'].font = Font(name=FSimple,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
 
                 sheet['A9'] = 'MIMO 4x4 for used bands'
                 if S_4x4:
                     sheet['B9'] = 'Supported'
                 else:
                     sheet['B9'] = 'Not Supported'
-                sheet['B9'].font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['B9'].font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
 
                 sheet['A10'] = 'CA 7c, 256 QAM, MIMO 4x4'
                 S_Qualcomm = (((S256DL or S256UL) and S_4x4) and S_CA7C)
@@ -1308,7 +1314,7 @@ with open(ff, 'w') as fO:
                     sheet['B10'] = 'Supported'
                 else:
                     sheet['B10'] = 'Not Supported'
-                sheet['B10'].font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet['B10'].font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
                 RowInSheet = 15
                 sheet.cell(row=RowInSheet, column=1, value='UE access stratum:')
                 sheet.cell(row=RowInSheet, column=2, value= str(UEaccS))
@@ -1343,31 +1349,33 @@ with open(ff, 'w') as fO:
                 for i in range(2,28): # Выделяем заголовки строк 2..27 в колонке А
                     i5 = str(i)
                     cellN = 'A'+i5
-                    sheet[cellN].font = Font(name=FBold, size=12, underline='none', color=colors.BLACK, bold=True, italic=False)
+                    sheet[cellN].font = Font(name=FBold, size=12, underline='none', color=BLACK, bold=True, italic=False)
                 # печатаем позже, т.к. не надо выделять под одну гребенку
                 RowInSheet=17
                 sheet.cell(row=RowInSheet, column=1, value='Feature Group Indicators: ')
-                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
 
                 for i in range(2,8): # Вывод данных в колонке B в строках 2..7 жирным моноширинным шрифтом
                     i5 = str(i)
                     cellN = 'B'+i5
-                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=colors.BLACK, bold= True, italic=False)
+                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=BLACK, bold= True, italic=False)
+
                 for i in range(18,28): # Вывод данных в колонке B в строках 18..27 жирным моноширинным шрифтом
                     i5 = str(i)
                     cellN = 'B'+i5
-                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=colors.BLACK, bold= True, italic=False)
+                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=BLACK, bold= True, italic=False)
+
                 RowInSheet=28
                 sheet.cell(row=RowInSheet, column=1, value='CA Combinations : ')
-                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=colors.DARKBLUE, bold=True, italic=False)
+                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
                 sheet.cell(row=RowInSheet, column=2, value= 'Для TDD расчет ожидаемой скорости выполняется для конфигурации TDD #3 (6DL/3UL таймслотов)')
                 Menu = ['Combination Nbr', 'Band', 'DL,bits', 'UL,bits', 'DL#', 'UL#', 'MIMO', 'DL bandwith', 'UL bandwith',
                  'DL Throughput', 'UL Throughput']
                 RowInSheet=29
                 for i in range (11):
                     sheet.cell(row=RowInSheet, column=i+1, value= Menu[i])
-                    sheet.cell(row=RowInSheet,column=i+1).font = Font(name=FBold,size=12, underline='none', color=colors.YELLOW, bold=True, italic=False)
-                    sheet.cell(row=RowInSheet,column=i+1).fill = PatternFill(fill_type='solid', start_color=colors.DARKBLUE, end_color=colors.DARKBLUE)
+                    sheet.cell(row=RowInSheet,column=i+1).font = Font(name=FBold,size=12, underline='none', color=YELLOW, bold=True, italic=False)
+                    sheet.cell(row=RowInSheet,column=i+1).fill = PatternFill(fill_type='solid', start_color=DARKBLUE, end_color=DARKBLUE)
                 sheet.column_dimensions['A'].width = 32
                 sheet.column_dimensions['B'].width = 31
                 for i5 in ['C','D','E','F','G']: # узкие колонки

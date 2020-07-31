@@ -134,6 +134,11 @@ C_LightYellow = '00FFFFA0'
 C_LightGreen =  '00A0FFA0'
 C_MGreen =      '0000A000'
 C_LBlue =       '00C0C0FF'
+DARKBLUE = '00000077'
+DARKRED =  '00770000'
+YELLOW =   '00FFFF00'
+BLACK  =   '00000000'
+
 
 # Bands filters and XLS conclusions base
 PrimaryEUTRABand = 7 # Carrier of LTE band for which "Supported" decision should be made about 256QAM or 4/8 layers supporting
@@ -166,3 +171,4 @@ SwitchesNames = ('   FGI out   ', #0    var1
 DEF_SCR_SW = (1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1)
 DEF_TXT_SW = (1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2)
 DEF_XLS_SW = (1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 3)
+
