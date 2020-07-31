@@ -15,11 +15,11 @@ def p1():
     :param: none
     :return: none
     """
-    selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+float(spin.get()))+'dB'
+    selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+window.AttDecimal.get()/10)+'dB'
     print(selection)
     print(window.Selected.get())
-    print(window.AttInteger.get())
-    print(window.AttDecimal.get())
+    Att = window.AttInteger.get()+window.AttDecimal.get()/10
+    print('Value = ',Att)
     label.config(text = selection)
     # window.label.set(selection)
 
@@ -30,7 +30,7 @@ def spc():
     :return: none
     """
     window.AttInteger.set(window.AttDecs.get()*10+window.AttOnes.get())
-    selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+window.AttDecimal.get())+'dB'
+    selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+window.AttDecimal.get()/10)+'dB'
     # print(window.AttDecimal.get())
     label.config(text = selection)
 
@@ -39,11 +39,11 @@ def scp(v):
     Handler for Scale vidget
     :param: v Scale value (String)
     """
-    window.AttOnes.set(window.AttInteger.get() % 10) # единицы = остаток от деления на 10
-    window.AttDecs.set(window.AttInteger.get() // 10) # Десятки = результат целочисленного деления на 10
-    selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+window.AttDecimal.get())+'dB'
-    selection = window.Selected.get() + ": Attenuation = " + str( float(v) + window.AttDecimal.get())+'dB'
-    print(v)
+    window.AttOnes.set(int(window.AttInteger.get() % 10)) # единицы = остаток от деления на 10
+    window.AttDecs.set(int(window.AttInteger.get() // 10)) # Десятки = результат целочисленного деления на 10
+    selection = window.Selected.get() + ": Attenuation = " + str((window.AttInteger.get())+window.AttDecimal.get()/10)+'dB'
+    selection = window.Selected.get() + ": Attenuation = " + str( float(v) + window.AttDecimal.get()/10)+'dB'
+    # print(v)
     label.config(text = selection)
 
 window = Tk()
@@ -71,31 +71,39 @@ label = Label(frame1,
 spw = LabelFrame (window, bd = 2, fg = 'blue', text = 'Select attenuation:')
 spin = Spinbox(spw,
                text="0.1 dB",
-               width=4,
+               width=1,
                from_=0,
-               to=0.9,
-               increment = 0.1,
+               to=9,
+               increment = 1,
                format='%1.1f',
+               font='System 6',
                command = spc,
                textvariable = window.AttDecimal,
                wrap=True)
 spin1 = Spinbox(spw,
                text="1 dB",
-               width=4,
+               width=1,
                from_=0,
                to=9,
                increment = 1,
                # format='%1s',
+               font='System 9',
                command = spc,
                textvariable = window.AttOnes,
                wrap=True)
+labelPoint = Label(spw,
+              foreground = "#010",
+              background = 'white',
+              font = 'System 10',
+              text = '.')
 spin10 = Spinbox(spw,
                text="10 dB",
-               width=4,
+               width=1,
                from_=0,
                to=6,
                increment = 1,
                # format='%1f',
+               font='System 10',
                command = spc,
                textvariable = window.AttDecs,
                wrap=True)
@@ -103,7 +111,7 @@ spinLab = Spinbox(frame1,
                 values=sorted(ATTs),
                 width=8,
                 textvariable=window.Selected,
-                font='System 8',
+                font='System 9',
                 command = spc,
                 wrap=True)
 scale = Scale(frame1,
@@ -154,5 +162,6 @@ button2.pack(side = 'right')
 spw.pack(side = 'bottom')
 spin10.pack(side = 'left')
 spin1.pack(side = 'left')
+labelPoint.pack(side = 'left')
 spin.pack(side = 'left')
 window.mainloop()
