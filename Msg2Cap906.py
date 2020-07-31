@@ -403,7 +403,7 @@ def GUI(tt,ttX):
             padx = "5",  # отступ от границ до содержимого по горизонтали
             pady = "4",  # отступ от границ до содержимого по вертикали
             # font = "10",  # высота шрифта
-            overrelief = RAISED,
+            overrelief = SUNKEN,
             command = p1)
     button2 = Button(frameBt, text = 'Отмена',
              background="#ddd",  # фоновый цвет кнопки
@@ -412,7 +412,7 @@ def GUI(tt,ttX):
              padx="5",  # отступ от границ до содержимого по горизонтали
              pady="4",  # отступ от границ до содержимого по вертикали
              # font="10",  # высота шрифта
-             overrelief=RAISED,
+             overrelief=SUNKEN,
              command = p2)
 
     frameLb.pack(side = 'right', fill = 'y', expand = TRUE)

@@ -136,20 +136,24 @@ scale = Scale(frame1,
 
 button1 = Button(frame2,text = 'SET',
                         # background = "#999",  # фоновый цвет кнопки
-                        activebackground= "#999",
+                        activebackground = "#999",
+                        highlightbackground= "#fff",
                         foreground = "#010",  # цвет текста
                         padx = "5",  # отступ от границ до содержимого по горизонтали
                         pady = "4",  # отступ от границ до содержимого по вертикали
                         font='System 8',
                         # font = "9",  # высота шрифта
+                        overrelief=SUNKEN,
                         command=p1)
 button2 = Button(frame2, text = 'Cancel',
                          background="#777",  # фоновый цвет кнопки
                          foreground="#000",  # цвет текста
+                         highlightbackground="#fff",
                          padx="5",  # отступ от границ до содержимого по горизонтали
                          pady="4",  # отступ от границ до содержимого по вертикали
                          font='System 8',
                          # font="9",  # высота шрифта
+                         overrelief=SUNKEN,
                          command = p2)
 
 frame1.pack(side = 'top')
