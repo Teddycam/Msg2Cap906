@@ -8,7 +8,7 @@ import logging
 import tkinter.filedialog
 from prettytable import PrettyTable
 from openpyxl.styles import Font, Fill  # Подключаем стили для текста
-from openpyxl.styles import colors  # Подключаем цвета для текста и ячеек
+# from openpyxl.styles import colors  # Подключаем цвета для текста и ячеек
 from openpyxl.styles import PatternFill  # Подключаем стили для ячеек
 
 # Switches
