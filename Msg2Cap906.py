@@ -1,3 +1,8 @@
+# To Do:
+# 1) "SUM of comb.# 62 (1ccs)" in case of 2xDL cc should be calculated as "(2ccs)"
+# 2) Add check switch and procedure for Hiding yellow and blue rows in the output excel file
+# 3)
+
 from Patterns import *
 from tkinter import *
 # from tkinter import font
@@ -7,7 +12,7 @@ import openpyxl
 import logging
 import tkinter.filedialog
 from prettytable import PrettyTable
-from openpyxl.styles import Font, Fill  # Подключаем стили для текста
+from openpyxl.styles import Font  # Fill  # Подключаем стили для текста
 # from openpyxl.styles import colors  # Подключаем цвета для текста и ячеек
 from openpyxl.styles import PatternFill  # Подключаем стили для ячеек
 
@@ -27,12 +32,12 @@ BandsFilter = True
 # VARs
 TMF = False
 eNB = False
-S256DL = False # 256QAM DL for some of use band(s)
-S256UL = False # 256QAM UL for some of use band(s)
-S_4x4 = False # 4 layers for some of use band(s)
-S_8x8 = False # 8 layers for some of use band(s)
-S_CA7C = False # CA 7C support (CA of 2 carriers in Band 7)
-S_Qualcomm = False # Qualcomm's requirement statement value
+S256DL = False  # 256QAM DL for some of use band(s)
+S256UL = False  # 256QAM UL for some of use band(s)
+S_4x4 = False  # 4 layers for some of use band(s)
+S_8x8 = False  # 8 layers for some of use band(s)
+S_CA7C = False  # CA 7C support (CA of 2 carriers in Band 7)
+S_Qualcomm = False  # Qualcomm's requirement statement value
 
 # internal DB arrays:
 Bands = []
@@ -63,6 +68,7 @@ logging.basicConfig(level=logging.INFO, format=formatter)
 logger = logging.getLogger('_Parser')
 logger.setLevel(logging.INFO)
 
+
 # извлечение числа из строчного значения в скобках вида (25)
 def valfrombrackets(inputstr):
     """
@@ -74,12 +80,13 @@ def valfrombrackets(inputstr):
     """
     pos01 = inputstr.find("(")
     pos02 = inputstr.find(")")
-    if (pos01 >= 0 and pos02 > 0):
+    if pos01 >= 0 and pos02 > 0:
         return inputstr[pos01 + 1:pos02]
     else:
         logger.error('ValFromBrackets cannot find any value in %s:', inputstr)
         logger.error('Returned None')
         return None
+
 
 def valFGIfromquotes(inputstr):
     """
@@ -90,11 +97,11 @@ def valFGIfromquotes(inputstr):
     return = 'bla vla'
     """
     pos01 = inputstr.find("\'")
-    if pos01 <0:
+    if pos01 < 0:
         pos01 = 0
-    pos02 = inputstr[pos01+1:].find("\'")
+    pos02 = inputstr[pos01 + 1:].find("\'")
     if (pos01 >= 0 and pos02 == 32):
-        return inputstr[pos01 + 1:pos01+33]
+        return inputstr[pos01 + 1:pos01 + 33]
     else:
         logger.error('ValFromQuotes cannot find any value in %s:', inputstr)
         logger.error('Returned None')
@@ -113,10 +120,10 @@ def valfromGSM(inputstr):
     pos01 = inputstr.find("gsm")
     pos02 = inputstr.find("(")
     if (pos01 >= 0 and pos02 > 0):
-        a = inputstr[pos01+3:pos02]
+        a = inputstr[pos01 + 3:pos02]
         for b in range(0, len(a)):
-            if (a[b] in '0123456789'): aa= aa+a[b]
-        if len(a)>0:
+            if (a[b] in '0123456789'): aa = aa + a[b]
+        if len(a) > 0:
             return int(aa)
         else:
             return None
@@ -124,6 +131,7 @@ def valfromGSM(inputstr):
         logger.error('ValFromGSM cannot find any value in %s:', inputstr)
         logger.error('Returned None')
         return None
+
 
 def EndStrFilter(inputstr):
     """
@@ -135,9 +143,9 @@ def EndStrFilter(inputstr):
     """
     pos01 = inputstr.find(")")
     if (pos01 > 0):
-        a = inputstr[:pos01+1]
+        a = inputstr[:pos01 + 1]
         a = a.rstrip('\n')
-        if len(a)>0:
+        if len(a) > 0:
             return a
         else:
             return ''
@@ -146,7 +154,8 @@ def EndStrFilter(inputstr):
         logger.error('Returned None')
         return ''
 
-def  FillCellSum(r,c,v,ws,clr):
+
+def FillCellSum(r, c, v, ws, clr):
     """
     This for fill cell [r][c] of worksheet ws with style for SUM  
     :param ws: worksheet
@@ -159,11 +168,13 @@ def  FillCellSum(r,c,v,ws,clr):
     return = worksheet with with filled cells
     """
     ws.cell(row=r, column=c, value=v)
-    ws.cell(row=r, column=c).font = Font(name=FSimple,size=12, underline='single', color=DARKRED, bold=True, italic=True)
-    ws.cell(row=r, column=c).fill = PatternFill(fill_type='solid', start_color=clrCC , end_color=clrCC)
+    ws.cell(row=r, column=c).font = Font(name=FSimple, size=12, underline='single', color=DARKRED, bold=True,
+                                         italic=True)
+    ws.cell(row=r, column=c).fill = PatternFill(fill_type='solid', start_color=clrCC, end_color=clrCC)
     return ws
 
-def  FillCellNorm(r,c,v,ws):
+
+def FillCellNorm(r, c, v, ws):
     """
     This for fill cell [r][c] of worksheet ws with style for Normal output
     :param ws: worksheet
@@ -175,8 +186,10 @@ def  FillCellNorm(r,c,v,ws):
     return = worksheet with filled cells
     """
     ws.cell(row=r, column=c, value=v)
-    ws.cell(row=r, column=c).font = Font(name=FSimple,size=10, underline='none', color=DARKBLUE, bold=False, italic=True)
+    ws.cell(row=r, column=c).font = Font(name=FSimple, size=10, underline='none', color=DARKBLUE, bold=False,
+                                         italic=True)
     return ws
+
 
 def CollectPatt(Slist, Patt, corr):
     """
@@ -192,8 +205,9 @@ def CollectPatt(Slist, Patt, corr):
     for i in range(0, len(Slist)):
         pos = s[i].find(Patt)
         if (pos >= 0):
-            Flist.append(EndStrFilter(s[i][pos + corr:]).replace('-',''))
+            Flist.append(EndStrFilter(s[i][pos + corr:]).replace('-', ''))
     return Flist
+
 
 def CheckCCCinUsed(cc, UPat):
     """
@@ -207,6 +221,7 @@ def CheckCCCinUsed(cc, UPat):
     for i5 in UPat:
         cciu = cciu or (cc == i5)
     return cciu
+
 
 def Conv2Bits(Captxt):
     """
@@ -228,7 +243,8 @@ def Conv2Bits(Captxt):
                 CapBits.append("0")
     return CapBits
 
-def GUI(tt,ttX):
+
+def GUI(tt, ttX):
     """
     This is GUI for getting switches values and checking output file name and path
     :param tt: output file name
@@ -237,6 +253,7 @@ def GUI(tt,ttX):
               vv: values list of the switches snd radiobuttons
               ls: list of selected elements of list (not used yet)
     """
+
     def p1():
         global vv
         vv = []
@@ -271,21 +288,21 @@ def GUI(tt,ttX):
         exit(0)
 
     def c0():
-        logger.info('Radio = %s',var11.get())
+        logger.info('Radio = %s', var11.get())
 
-        if var11.get()==3: # TXT+XLS
-            frameT.pack(side='top', expand = TRUE)
+        if var11.get() == 3:  # TXT+XLS
+            frameT.pack(side='top', expand=TRUE)
             textT.pack(side='top', fill='both')
-            frameX.pack(side='top', expand = TRUE)
+            frameX.pack(side='top', expand=TRUE)
             textX.pack(side='top', fill='both')
 
-        elif var11.get()==2: # TXT only
+        elif var11.get() == 2:  # TXT only
             frameT.pack(side='top', expand=TRUE)
             textT.pack(side='top', fill='both')
             # frameX.pack_forget()
             textX.pack_forget()
 
-        elif var11.get()==1: # Screen only, no files
+        elif var11.get() == 1:  # Screen only, no files
             # frameT.pack_forget()
             textT.pack_forget()
             # frameX.pack_forget()
@@ -297,26 +314,25 @@ def GUI(tt,ttX):
             exit(0)
 
     def c1():
-        logger.info('Radio = %s',var11.get())
+        logger.info('Radio = %s', var11.get())
         var7.set(0)
         textT.pack_forget()
         textX.pack_forget()
 
     def c2():
-        logger.info('Radio = %s',var11.get())
+        logger.info('Radio = %s', var11.get())
         var7.set(0)
         frameT.pack(side='top', expand=TRUE)
         textT.pack(side='top', fill='both')
         textX.pack_forget()
 
     def c3():
-        logger.info('Radio = %s',var11.get())
+        logger.info('Radio = %s', var11.get())
         var7.set(1)
-        frameT.pack(side='top', expand = TRUE)
+        frameT.pack(side='top', expand=TRUE)
         textT.pack(side='top', fill='both')
-        frameX.pack(side='top', expand = TRUE)
+        frameX.pack(side='top', expand=TRUE)
         textX.pack(side='top', fill='both')
-
 
     def ppp(event):
         logger.info('Button1 pressed')
@@ -340,7 +356,7 @@ def GUI(tt,ttX):
     var10 = IntVar()
     var11 = IntVar()
     defFont = F_CONSOLAS9B
-    #FsegoeUI8 #'Consolas 9' || 'Segoe 9'//'Segoe UI'
+    # FsegoeUI8 #'Consolas 9' || 'Segoe 9'//'Segoe UI'
 
     if '.txt' in ext:
         switches = DEF_TXT_SW
@@ -361,97 +377,103 @@ def GUI(tt,ttX):
     var11.set(switches[10])
     window.title("Msg2Cap")
 
-    frameO = LabelFrame(window,  bd = 2, fg = 'blue', text = 'Output:') # background = 'white',
+    frameO = LabelFrame(window, bd=2, fg='blue', text='Output:')  # background = 'white',
 
-    frameT = LabelFrame(frameO,  bd = 2, fg = 'blue', text = 'TXT file name:') # background = 'white',
-    textT = Text(frameT, height = 2, width = len(tt)+5, bd = 0, font = defFont, wrap = WORD, highlightcolor = 'yellow')
+    frameT = LabelFrame(frameO, bd=2, fg='blue', text='TXT file name:')  # background = 'white',
+    textT = Text(frameT, height=2, width=len(tt) + 5, bd=0, font=defFont, wrap=WORD, highlightcolor='yellow')
     textT.insert(1.0, tt)
 
-    frameX = LabelFrame(frameO, bd = 2, fg = 'blue', text = 'XLS file name:') # background = 'white',
-    textX = Text(frameX, height = 2, width = len(tt)+5, bd = 0, font = defFont, wrap = WORD, highlightbackground = 'yellow')
+    frameX = LabelFrame(frameO, bd=2, fg='blue', text='XLS file name:')  # background = 'white',
+    textX = Text(frameX, height=2, width=len(tt) + 5, bd=0, font=defFont, wrap=WORD, highlightbackground='yellow')
     textX.insert(1.0, ttX)
 
     frameLb = LabelFrame(window, bd=2, fg='blue', text='Options:')  # background = 'white',
-    listbox1 = Listbox(frameLb, height = 8, width = 15, selectmode = EXTENDED, font = defFont )
-    list1 = ['Option №0','Option №1','Option №2','Option №3','Option №4','Option №5','Option №6','Option №7','Option №8',
-             'Option №9', 'Option №10','Option №11','Option №12','Option №13','Option №14','Option №15']
-    for i in list1: listbox1.insert(END,i)
+    listbox1 = Listbox(frameLb, height=8, width=15, selectmode=EXTENDED, font=defFont)
+    list1 = ['Option №0', 'Option №1', 'Option №2', 'Option №3', 'Option №4', 'Option №5', 'Option №6', 'Option №7',
+             'Option №8',
+             'Option №9', 'Option №10', 'Option №11', 'Option №12', 'Option №13', 'Option №14', 'Option №15']
+    for i in list1: listbox1.insert(END, i)
 
-    frameCB = LabelFrame(window, bd = 2, fg = 'blue', text = 'Parsing options:') # , background = 'white'
-    check1 = Checkbutton(frameCB, text = SwitchesNames[0], font = defFont, variable = var1, onvalue = 1, offvalue = 0 ,command = c0)
-    check2 = Checkbutton(frameCB, text = SwitchesNames[1], font = defFont, variable = var2, onvalue = 1, offvalue = 0 ,command = c0)
-    check3 = Checkbutton(frameCB, text = SwitchesNames[2], font = defFont, variable = var3, onvalue = 1, offvalue = 0 ,command = c0)
-    check4 = Checkbutton(frameCB, text = SwitchesNames[3], font = defFont, variable = var4, onvalue = 1, offvalue = 0 ,command = c0)
-    check5 = Checkbutton(frameCB, text = SwitchesNames[4], font = defFont, variable = var5, onvalue = 1, offvalue = 0 ,command = c0)
-    check6 = Checkbutton(frameCB, text = SwitchesNames[5], font = defFont, variable = var6, onvalue = 1, offvalue = 0 ,command = c0)
-    check7 = Checkbutton(frameCB, text = SwitchesNames[6], font = defFont, variable = var7, onvalue = 1, offvalue = 0 ,command = c0)
-    check8 = Checkbutton(frameCB, text = SwitchesNames[7], font = defFont, variable = var8, onvalue = 1, offvalue = 0 ,command = c0)
-    check9 = Checkbutton(frameCB, text = SwitchesNames[8], font = defFont, variable = var9, onvalue = 1, offvalue = 0 ,command = c0)
-    check10 = Checkbutton(frameCB, text = SwitchesNames[9],font = defFont, variable = var10, onvalue = 1, offvalue = 0 ,command = c0)
+    frameCB = LabelFrame(window, bd=2, fg='blue', text='Parsing options:')  # , background = 'white'
+    check1 = Checkbutton(frameCB, text=SwitchesNames[0], font=defFont, variable=var1, onvalue=1, offvalue=0, command=c0)
+    check2 = Checkbutton(frameCB, text=SwitchesNames[1], font=defFont, variable=var2, onvalue=1, offvalue=0, command=c0)
+    check3 = Checkbutton(frameCB, text=SwitchesNames[2], font=defFont, variable=var3, onvalue=1, offvalue=0, command=c0)
+    check4 = Checkbutton(frameCB, text=SwitchesNames[3], font=defFont, variable=var4, onvalue=1, offvalue=0, command=c0)
+    check5 = Checkbutton(frameCB, text=SwitchesNames[4], font=defFont, variable=var5, onvalue=1, offvalue=0, command=c0)
+    check6 = Checkbutton(frameCB, text=SwitchesNames[5], font=defFont, variable=var6, onvalue=1, offvalue=0, command=c0)
+    check7 = Checkbutton(frameCB, text=SwitchesNames[6], font=defFont, variable=var7, onvalue=1, offvalue=0, command=c0)
+    check8 = Checkbutton(frameCB, text=SwitchesNames[7], font=defFont, variable=var8, onvalue=1, offvalue=0, command=c0)
+    check9 = Checkbutton(frameCB, text=SwitchesNames[8], font=defFont, variable=var9, onvalue=1, offvalue=0, command=c0)
+    check10 = Checkbutton(frameCB, text=SwitchesNames[9], font=defFont, variable=var10, onvalue=1, offvalue=0,
+                          command=c0)
 
-    frameRB = LabelFrame(window,  bd = 2, fg = 'blue', text = 'Output:', width = len(tt)+5) # background = 'white',
-    rbutton1 = Radiobutton( frameRB, text = ' Screen ', overrelief = RAISED, font = defFont, variable = var11, value = 1, command = c1)
-    rbutton2 = Radiobutton( frameRB, text = 'TXT file', overrelief = RAISED, font = defFont, variable = var11, value = 2, command = c2)
-    rbutton3 = Radiobutton( frameRB, text = ' XLS+TXT', overrelief = RAISED,  font = defFont, variable = var11, value = 3, command = c3)
+    frameRB = LabelFrame(window, bd=2, fg='blue', text='Output:', width=len(tt) + 5)  # background = 'white',
+    rbutton1 = Radiobutton(frameRB, text=' Screen ', overrelief=RAISED, font=defFont, variable=var11, value=1,
+                           command=c1)
+    rbutton2 = Radiobutton(frameRB, text='TXT file', overrelief=RAISED, font=defFont, variable=var11, value=2,
+                           command=c2)
+    rbutton3 = Radiobutton(frameRB, text=' XLS+TXT', overrelief=RAISED, font=defFont, variable=var11, value=3,
+                           command=c3)
 
-    frameBt = Frame(window, background = 'white', bd = 2)
-    button1 = Button(frameBt, text = 'Запуск',
-            background = "#eee",  # фоновый цвет кнопки
-            activebackground= "#999",
-            foreground = "#080",  # цвет текста
-            font='System 8',
-            padx = "5",  # отступ от границ до содержимого по горизонтали
-            pady = "4",  # отступ от границ до содержимого по вертикали
-            # font = "10",  # высота шрифта
-            overrelief = SUNKEN,
-            command = p1)
-    button2 = Button(frameBt, text = 'Отмена',
-             background="#ddd",  # фоновый цвет кнопки
-             foreground="#800",  # цвет текста
-             font='System 8',
-             padx="5",  # отступ от границ до содержимого по горизонтали
-             pady="4",  # отступ от границ до содержимого по вертикали
-             # font="10",  # высота шрифта
-             overrelief=SUNKEN,
-             command = p2)
+    frameBt = Frame(window, background='white', bd=2)
+    button1 = Button(frameBt, text='Запуск',
+                     background="#eee",  # фоновый цвет кнопки
+                     activebackground="#999",
+                     foreground="#080",  # цвет текста
+                     font='System 8',
+                     padx="5",  # отступ от границ до содержимого по горизонтали
+                     pady="4",  # отступ от границ до содержимого по вертикали
+                     # font = "10",  # высота шрифта
+                     overrelief=SUNKEN,
+                     command=p1)
+    button2 = Button(frameBt, text='Отмена',
+                     background="#ddd",  # фоновый цвет кнопки
+                     foreground="#800",  # цвет текста
+                     font='System 8',
+                     padx="5",  # отступ от границ до содержимого по горизонтали
+                     pady="4",  # отступ от границ до содержимого по вертикали
+                     # font="10",  # высота шрифта
+                     overrelief=SUNKEN,
+                     command=p2)
 
-    frameLb.pack(side = 'right', fill = 'y', expand = TRUE)
-    listbox1.pack(side = 'right', fill = 'y', expand = TRUE)
+    frameLb.pack(side='right', fill='y', expand=TRUE)
+    listbox1.pack(side='right', fill='y', expand=TRUE)
 
-    frameCB.pack(side = 'left')
-    check1.pack(side = 'top')
-    check2.pack(side = 'top')
-    check3.pack(side = 'top')
-    check4.pack(side = 'top')
-    check5.pack(side = 'top')
-    check6.pack(side = 'top')
-    check7.pack(side = 'top')
-    check8.pack(side = 'top')
-    check9.pack(side = 'top')
-    check10.pack(side = 'top')
+    frameCB.pack(side='left')
+    check1.pack(side='top')
+    check2.pack(side='top')
+    check3.pack(side='top')
+    check4.pack(side='top')
+    check5.pack(side='top')
+    check6.pack(side='top')
+    check7.pack(side='top')
+    check8.pack(side='top')
+    check9.pack(side='top')
+    check10.pack(side='top')
 
-    frameRB.pack(side = 'top')
-    rbutton1.pack(side = 'top', fill = 'both', expand = TRUE)
-    rbutton2.pack(side = 'top',fill = 'both', expand = TRUE)
-    rbutton3.pack(side = 'top',fill = 'both', expand = TRUE)
+    frameRB.pack(side='top')
+    rbutton1.pack(side='top', fill='both', expand=TRUE)
+    rbutton2.pack(side='top', fill='both', expand=TRUE)
+    rbutton3.pack(side='top', fill='both', expand=TRUE)
 
-    frameBt.pack(side = 'bottom')
-    button1.pack(side = 'left')
-    button2.pack(side = 'right')
+    frameBt.pack(side='bottom')
+    button1.pack(side='left')
+    button2.pack(side='right')
 
-    frameO.pack(side = 'bottom', expand = TRUE)
+    frameO.pack(side='bottom', expand=TRUE)
 
-    frameT.pack(side = 'top', expand = TRUE)
-    textT.pack(side = 'top', fill = 'both')
+    frameT.pack(side='top', expand=TRUE)
+    textT.pack(side='top', fill='both')
 
     frameX.pack(side='top', expand=TRUE)
-    textX.pack(side = 'top', fill = 'both')
+    textX.pack(side='top', fill='both')
 
     if var11.get() != 3:
         window.after(100, textX.pack_forget)
 
     window.wait_window(window)
     return ttt, tttX, vv, ls
+
 
 def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, utranoutSW):
     """
@@ -466,7 +488,7 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, ut
     e.g. GERAN_UTRAN_Capabilities(s, Patt_geranPS, Patt_geranCS, Patt_UERATcap, corr_eNB_GU, geran_out, utran_out)
     return = tuple  of collected values [GeranPStxt, GeranCStxt, UTRANtxt]
     """
-# изначально примем начало блоков GeRAN PS/CS//UTRAN = последней строке трассировки
+    # изначально примем начало блоков GeRAN PS/CS//UTRAN = последней строке трассировки
     UTRAN_pos = geranCS_pos = geranPS_pos = len(Slist)
     logger.info('Пытаемся найти истинные начала блоков GeRAN PS/CS//UTRAN')
     # Init returned values by 'Unknown;
@@ -516,21 +538,24 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, ut
             else:
                 k = geranPS_pos
                 logger.info("<UTRAN block is 1st, geranPS is 2nd>")
-        endsearch = min(k+1, len(Slist))
+        endsearch = min(k + 1, len(Slist))
         for i in range(UTRAN_pos, endsearch):
             pos2 = Slist[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
-                pos3 = Slist[i][pos2+17+corr:].find(" --")  # позиция конца паттерна в строке ***************************************************
+                pos3 = Slist[i][pos2 + 17 + corr:].find(
+                    " --")  # позиция конца паттерна в строке ***************************************************
                 # pos3 = Slist[i].find(" (")  # позиция конца паттерна в строке
                 if pos3 < 0:
-                    UTRANtxt = Slist[i][pos2+17+corr:]
+                    UTRANtxt = Slist[i][pos2 + 17 + corr:]
                     utrangeranbinary = False
                     Stail = s[i][-20:]
-                    logger.warning('2g/3g capabilities binary output disabled due to UTRAN capabilities unqualified, tail is %s', Stail)
+                    logger.warning(
+                        '2g/3g capabilities binary output disabled due to UTRAN capabilities unqualified, tail is %s',
+                        Stail)
                 else:
-                    UTRANtxt = Slist[i][pos2+17+corr: pos2+17+pos3+corr]
+                    UTRANtxt = Slist[i][pos2 + 17 + corr: pos2 + 17 + pos3 + corr]
                 break
-     ##
+    ##
     logger.info('Поиск капабилити для GeranPS')
     if geranoutSw and (geranPS_pos < len(Slist)):
         if geranPS_pos == smax:
@@ -553,14 +578,17 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, ut
         for i in range(geranPS_pos, endsearch):
             pos2 = Slist[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
-                pos3 = Slist[i][pos2+17+corr:].find(" ---- ")  # позиция конца паттерна в строке *************************************************************
+                pos3 = Slist[i][pos2 + 17 + corr:].find(
+                    " ---- ")  # позиция конца паттерна в строке *************************************************************
                 if pos3 < 0:
-                    GeranPStxt = Slist[i][pos2+17+corr:]
+                    GeranPStxt = Slist[i][pos2 + 17 + corr:]
                     utrangeranbinary = False
                     Stail = s[i][-20:]
-                    logger.warning('2g/3g capabilities binary output disabled due to GeranPS capabilities unqualified, tail is %s', Stail)
+                    logger.warning(
+                        '2g/3g capabilities binary output disabled due to GeranPS capabilities unqualified, tail is %s',
+                        Stail)
                 else:
-                    GeranPStxt = Slist[i][pos2+17+corr:pos2+17+pos3+corr]
+                    GeranPStxt = Slist[i][pos2 + 17 + corr:pos2 + 17 + pos3 + corr]
                 break
     ##
     logger.info('Поиск капабилити для GeranCS')
@@ -584,20 +612,24 @@ def GERAN_UTRAN_Capabilities(Slist, geranPS, geranCS, UTRA, corr, geranoutSw, ut
         for i in range(geranCS_pos, endsearch):
             pos2 = Slist[i].find(Patt_UERATcap)  # позиция начала паттерна в строке
             if (pos2 >= 0):
-                pos3 = Slist[i][pos2+17+corr:].find(" ---- ")  # позиция конца паттерна в строке *************************************************************
+                pos3 = Slist[i][pos2 + 17 + corr:].find(
+                    " ---- ")  # позиция конца паттерна в строке *************************************************************
                 if pos3 < 0:
-                    GeranCStxt = Slist[i][pos2+17+corr:]
+                    GeranCStxt = Slist[i][pos2 + 17 + corr:]
                     utrangeranbinary = False
                     Stail = s[i][-20:]
-                    logger.warning('2g/3g capabilities binary output disabled due to GeranCS capabilities unqualified, tail is %s', Stail)
+                    logger.warning(
+                        '2g/3g capabilities binary output disabled due to GeranCS capabilities unqualified, tail is %s',
+                        Stail)
                 else:
-                    GeranCStxt = Slist[i][pos2+17+corr:pos2+17+pos3+corr]
+                    GeranCStxt = Slist[i][pos2 + 17 + corr:pos2 + 17 + pos3 + corr]
                 break
     return [GeranPStxt, GeranCStxt, UTRANtxt]
 
-#----------------------------------------------------------------------------------------------------------------------
-#---------------------------------- M A I N ---------------------------------------------------------------------------
-#----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
+# ---------------------------------- M A I N ---------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # fn -  полное имя входного файла любого типа
 # fnO - полное имя выходного текстового файла
 # fnX - полное имя выходного Excel файла
@@ -628,11 +660,11 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         fnO = os.path.splitext(fn)[0] + '_parsed.txt'
         logging.info('Output text file: %s', fnO)
 
-        fn1, fn1X, fl, sl = GUI(fnO, os.path.splitext(fn)[0] + '_parsed.xlsx')  #ttt, tttX, vv, ls
-        #switch to the parser's loger
+        fn1, fn1X, fl, sl = GUI(fnO, os.path.splitext(fn)[0] + '_parsed.xlsx')  # ttt, tttX, vv, ls
+        # switch to the parser's loger
         logger = logging.getLogger('_Parser')
 
-# ----------------------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------------------------------------------
         # Translate  GUI outputs
         fgi_out = bool(fl[0])
         geran_out = bool(fl[1])
@@ -642,11 +674,11 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         table_format = bool(fl[5])
         BandsFilter = bool(fl[6])
 
-        if fl[10] == 1: # Screen output only
+        if fl[10] == 1:  # Screen output only
             txt_output = False
             Excel_output = False
 
-        elif fl[10] == 2: # txt output only
+        elif fl[10] == 2:  # txt output only
             txt_output = True
             fn1 = fn1.rstrip('\n')
             if fn1 == '':
@@ -657,7 +689,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
                 logging.info('Output TXT file changed in GUI to: %s', fn1)
             Excel_output = False
 
-        elif fl[10] == 3: #XLS output + TXT output
+        elif fl[10] == 3:  # XLS output + TXT output
             txt_output = True
             Excel_output = True
             fn1X = fn1X.rstrip('\n')
@@ -667,20 +699,20 @@ if os.path.exists(fn):  # если файл трассировки сущест�
             else:
                 fnX = fn1X
                 logging.info('Output XLS file changed in GUI to: %s', fnX)
-        else: # Unknown value returned from GUI
+        else:  # Unknown value returned from GUI
             logging.error('Output Rbutton = %s is out of range', fl[10])
-            assert(1<=fl[10]<=3)
+            assert (1 <= fl[10] <= 3)
         logging.info('Output text file changed to: %s', fn1)
         logging.info('Selected entries: %s', sl)
         logging.info('Switches: %s', fl)
-# ----------------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------------------------------------
         s = f.readlines()
         f.close()
     # Should be '.xls','.xlsx','.xlsm'
     elif ('xls' in ext):
         # Excel_output = True
-        XLwithmacro = ('.xlsm','.xltm')
-        XLwithoutmacro = ('.xls','.xlsx','.xltx')
+        XLwithmacro = ('.xlsm', '.xltm')
+        XLwithoutmacro = ('.xls', '.xlsx', '.xltx')
         # меняем логгер на XLS
         logger = logging.getLogger('XLSproc')
         # Входная трассировка в файле Excel на вкладке Capabilities
@@ -693,13 +725,12 @@ if os.path.exists(fn):  # если файл трассировки сущест�
             logging.error('Extension %s is not known', ext)
             exit(1)
 
-        fnO = os.path.splitext(fn)[0]+ '_parsed.txt'
-        fnX = os.path.splitext(fn)[0]+'_parsed'+ext
+        fnO = os.path.splitext(fn)[0] + '_parsed.txt'
+        fnX = os.path.splitext(fn)[0] + '_parsed' + ext
         logging.info('Output XLS file: %s', fnX)
 
-
-        fn1, fn1X, fl, sl = GUI(fnO,fnX)
-        #switch to the parser's loger
+        fn1, fn1X, fl, sl = GUI(fnO, fnX)
+        # switch to the parser's loger
         logger = logging.getLogger('_XLSproc')
 
         # Translate  GUI outputs
@@ -765,7 +796,7 @@ if os.path.exists(fn):  # если файл трассировки сущест�
         for row in sheet.iter_rows():
             for cell in row:
                 if cell.value != None:
-                    s.append(str([cell.value ]).rstrip("'/]"))
+                    s.append(str([cell.value]).rstrip("'/]"))
         # FD_win.destroy()
     else:
         logger.error('File type %s undefined', ext)
@@ -781,7 +812,7 @@ else:
     ff = 'null'
     f0 = sys.stdout
 with open(ff, 'w') as fO:
-    if not(txt_output):
+    if not (txt_output):
         fO = sys.stdout
     logger.info("Трассировка %s содержит %s строк", fn, len(s))
     print("Трассировка", fn, " содержит ", len(s), " строк", file=fO)
@@ -850,18 +881,18 @@ with open(ff, 'w') as fO:
     print("\n", file=fO)
     ##
     logger.info('Active SWITCHes:')
-    logger.info('FGI_out = %s',fgi_out)
-    logger.info('geran_out = %s',geran_out)
-    logger.info('utran_out = %s',utran_out)
-    logger.info('utrangeranbinary = %s',utrangeranbinary)
-    logger.info('R14_enabled = %s',R14_enabled)
-    logger.info('table_format = %s',table_format)
-    logger.info('BandsFilter = %s',BandsFilter)
-    logger.info('txt_output = %s',txt_output)
-    logger.info('Excel_output = %s',Excel_output)
+    logger.info('FGI_out = %s', fgi_out)
+    logger.info('geran_out = %s', geran_out)
+    logger.info('utran_out = %s', utran_out)
+    logger.info('utrangeranbinary = %s', utrangeranbinary)
+    logger.info('R14_enabled = %s', R14_enabled)
+    logger.info('table_format = %s', table_format)
+    logger.info('BandsFilter = %s', BandsFilter)
+    logger.info('txt_output = %s', txt_output)
+    logger.info('Excel_output = %s', Excel_output)
     ##
     logger.info('Перебираем все строки для поиска UE Access Stratum')
-    UEaccS = CollectPatt(s, Patt_UEacc,0)
+    UEaccS = CollectPatt(s, Patt_UEacc, 0)
     print("Найденные 3gpp Access Stratum:", len(UEaccS), file=fO)
     print("=================================", file=fO)
     for i in range(0, len(UEaccS)):
@@ -869,7 +900,7 @@ with open(ff, 'w') as fO:
     print("\n", file=fO)
     ##
     logger.info('Перебираем все строки для сбора категорий')
-    UEcats = CollectPatt(s, Patt_UEcat,2)
+    UEcats = CollectPatt(s, Patt_UEcat, 2)
     print("Найденные категории LTE:", len(UEcats), file=fO)
     print("=================================", file=fO)
     S_UEcat = []
@@ -891,7 +922,7 @@ with open(ff, 'w') as fO:
     logger.info('LTE DL Categories: %s', S_UEcatDL)
     logger.info('LTE UL Categories: %s', S_UEcatUL)
     ##
-    S_EUTRA = [] #  номера LTE bands, Обнуляем начальное значение несущих EUTRA
+    S_EUTRA = []  # номера LTE bands, Обнуляем начальное значение несущих EUTRA
     nb = 0
     logger.info('Перебираем все строки для сбора бэндов EUTRA')
     for i in range(0, len(s)):
@@ -899,7 +930,7 @@ with open(ff, 'w') as fO:
         if (pos >= 0):
             Bands.append([0, 0, 0])
             eUtraBands.append("Band  " + (valfrombrackets(s[i][pos + 15:])))
-            S_EUTRA.append(int (valfrombrackets (s[i][pos + 15:])))
+            S_EUTRA.append(int(valfrombrackets(s[i][pos + 15:])))
             Bands[nb][0] = int(valfrombrackets(s[i][pos + 15:]))
             nb += 1
     S_EUTRA.sort()
@@ -915,7 +946,7 @@ with open(ff, 'w') as fO:
         if (pos >= 0):
             SBr12Found = True  # блок модуляций для R12xx присутствует
             NumSBr12 += 1  # количество блоков модуляций для r12 ++
-            #print("---SupportedBandEUTRA-v12 =", NumSBr12, file=fO)
+            # print("---SupportedBandEUTRA-v12 =", NumSBr12, file=fO)
             # Если найденный блок v1250, переопределим паттерны для переиспользования кода
             pos = s[i].find(Patt_SBr1250)
             if (pos >= 0):
@@ -927,11 +958,11 @@ with open(ff, 'w') as fO:
                 #   Поиск DL256
             # if ((s[i + 1].find(Patt_dl) >= 0) or (s[i + 2].find(Patt_dl) >= 0)):
             if ((Patt_dl in s[i + 1]) or (Patt_dl in s[i + 2])):
-                 eUtraBands[NumSBr12] = eUtraBands[NumSBr12] + " 256QAM DL"
-                 Bands[NumSBr12][1] = 8  # bits
-#                if (Bands[NumSBr12][0] = PrimaryEUTRABand)
-                 if (Bands[NumSBr12][0] in (PrimaryEUTRABand, SecondaryEUTRABands)):
-                    S256DL = True #256QAM for DL of some used bands (primary or secondary)
+                eUtraBands[NumSBr12] = eUtraBands[NumSBr12] + " 256QAM DL"
+                Bands[NumSBr12][1] = 8  # bits
+                #                if (Bands[NumSBr12][0] = PrimaryEUTRABand)
+                if (Bands[NumSBr12][0] in (PrimaryEUTRABand, SecondaryEUTRABands)):
+                    S256DL = True  # 256QAM for DL of some used bands (primary or secondary)
             else:
                 eUtraBands[NumSBr12] = eUtraBands[NumSBr12] + " 64QAM  DL"
                 Bands[NumSBr12][1] = 6  # bits
@@ -961,10 +992,10 @@ with open(ff, 'w') as fO:
     S_UTRAN = CollectPatt(s, Patt_UtraBands, 28)
     S_UTRAN.sort()
     print("Найденные UTRA bands:", len(S_UTRAN), file=fO)
-    print("========================", file = fO)
+    print("========================", file=fO)
     for i in range(0, len(S_UTRAN)):
-        S_UTRA.append(int(valfrombrackets(S_UTRAN[i]))+1)
-        print(S_UTRA[i],'\t',S_UTRAN[i], end='\n', file=fO)
+        S_UTRA.append(int(valfrombrackets(S_UTRAN[i])) + 1)
+        print(S_UTRA[i], '\t', S_UTRAN[i], end='\n', file=fO)
     print("\n", file=fO)
     logger.info('UTRA bands: %s', S_UTRA)
 
@@ -976,7 +1007,7 @@ with open(ff, 'w') as fO:
             GeRANBands.append(valfromGSM(s[i]))
             S_GERAN.append(valfromGSM(s[i]))
     print("Найденные GeRAN bands:", len(GeRANBands), file=fO)
-    print("========================", file = fO)
+    print("========================", file=fO)
     for i in range(0, len(GeRANBands)):
         print(GeRANBands[i], end='\n', file=fO)
     print("\n", file=fO)
@@ -1031,14 +1062,15 @@ with open(ff, 'w') as fO:
         print("\n", file=fO)
     ##
     logger.info('Поиск капабилити 2g/3g')
-    [GeranPScapTxt,GeranCScapTxt,UTRANcapTxt]=GERAN_UTRAN_Capabilities(s, Patt_geranPS, Patt_geranCS, Patt_UTRA, corr_eNB_GU, geran_out, utran_out)
+    [GeranPScapTxt, GeranCScapTxt, UTRANcapTxt] = GERAN_UTRAN_Capabilities(s, Patt_geranPS, Patt_geranCS, Patt_UTRA,
+                                                                           corr_eNB_GU, geran_out, utran_out)
     if (len(UTRANcapTxt) > 1) and utran_out:
         print("UTRAN capabilities: \n =0x", UTRANcapTxt, sep='', file=fO)
         if utrangeranbinary:
             UTRANcapBits = Conv2Bits(UTRANcapTxt)
             print("\nBinary = ", end='', file=fO)
             for i in range(len(UTRANcapBits)):
-                print(UTRANcapBits[i], end='',file=fO)
+                print(UTRANcapBits[i], end='', file=fO)
             print("\n", file=fO)
     print("\n", file=fO)
     if (len(GeranPScapTxt) > 1) and geran_out:
@@ -1070,7 +1102,7 @@ with open(ff, 'w') as fO:
         if (pos >= 0):
             CCr14Found = True  # блок модуляций для r14 присутствует
             NumCCr14 += 1  # количество блоков модуляций для r14 ++
-            #print("---SupportedCCEUTRA-r14 =", NumCCr14, file=fO)
+            # print("---SupportedCCEUTRA-r14 =", NumCCr14, file=fO)
             if 'supported' in s[i]:
                 CCr14Mod.append(8)  # bits
             else:
@@ -1097,7 +1129,8 @@ with open(ff, 'w') as fO:
             endcc = True
             while (endcc):
                 if (s[i].find(Patt_CC10) >= 0):
-                    CCs.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])  # Добавляем пустую запись для первой несущей в найденной комбинации несущих
+                    CCs.append([0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                0])  # Добавляем пустую запись для первой несущей в найденной комбинации несущих
                     Ncarr += 1  # 0,1,2,3,4,5,6,7,8,9,A - поля
                     # cбор и заполнение параметров для найденной несущей
                     CCs[Ncarr - 1][0] = NCCs
@@ -1137,14 +1170,15 @@ with open(ff, 'w') as fO:
                     if (temp_int == 0):
                         CCs[Ncarr - 1][6] = 2
                     elif (temp_int == 1):
-                        CCs[Ncarr - 1][6] = 4 # 4 layers
-                        if (CCs[Ncarr-1][1] in (PrimaryEUTRABand,SecondaryEUTRABands)):
+                        CCs[Ncarr - 1][6] = 4  # 4 layers
+                        if (CCs[Ncarr - 1][1] in (PrimaryEUTRABand, SecondaryEUTRABands)):
                             S_4x4 = True
                     elif (temp_int == 2):
-                        CCs[Ncarr - 1][6] = 8 # 8 layers
+                        CCs[Ncarr - 1][6] = 8  # 8 layers
                         if (CCs[Ncarr - 1][2] in (PrimaryEUTRABand, SecondaryEUTRABands)):
                             S_8x8 = True  # 8 layers for some of use band(s)
-                    if (CCs[Ncarr - 1][1] > 32) & (CCs[Ncarr - 1][1] < 49):  # TDD ULDL_config#3 (DL/UL=6/3): DL = 0.6*0.625=0.375 | UL = 0.3*0.625 = 0.1875
+                    if (CCs[Ncarr - 1][1] > 32) & (CCs[Ncarr - 1][
+                                                       1] < 49):  # TDD ULDL_config#3 (DL/UL=6/3): DL = 0.6*0.625=0.375 | UL = 0.3*0.625 = 0.1875
                         IsFDD = False
                         CCs[Ncarr - 1][9] = int(
                             0.375 * CCs[Ncarr - 1][2] * CCs[Ncarr - 1][4] * CCs[Ncarr - 1][6] * CCs[Ncarr - 1][7])
@@ -1159,21 +1193,21 @@ with open(ff, 'w') as fO:
         print("Найдено ", NCCs, " комбинаций несущих:", file=fO)
         #       print("\n",file = fO)
         if NCCs > 0:
-            nccUL_r14=0 # обнуляем номер UL компоненты для добавки данных UL модуляций R1430
-            #Вносим коррекции в UL при наличии блока UL 256QAM R14 и включенного свитча обработки R14
+            nccUL_r14 = 0  # обнуляем номер UL компоненты для добавки данных UL модуляций R1430
+            # Вносим коррекции в UL при наличии блока UL 256QAM R14 и включенного свитча обработки R14
             if (R14_enabled and CCr14Found):
                 logger.info('Обрабатываем расширение модуляций для R14')
                 for l in range(Ncarr):
                     # если у текущей компоненты UL активен (имеет не менее 1 пространственного канала)
                     # и для этой комбинации разрешен 256QAM UL (не None)
-                    if (CCs[l][5]>0 and CCr14Mod[nccUL_r14]>0):
+                    if (CCs[l][5] > 0 and CCr14Mod[nccUL_r14] > 0):
                         CCs[l][3] = CCr14Mod[nccUL_r14]
                         CCs[l][10] = int(0.625 * CCs[l][3] * CCs[l][5] * CCs[l][8])
                         nccUL_r14 += 1
                         if CCs[l][2] in (PrimaryEUTRABand, SecondaryEUTRABands):
                             S256UL = True
             if CCr14Found:
-                logger.info('Найдено %s компонент с UL 256QAM',nccUL_r14)
+                logger.info('Найдено %s компонент с UL 256QAM', nccUL_r14)
             ##
             logger.info('Создаем список комбинаций ')
             for i in range(NCCs):  # комбинации
@@ -1298,14 +1332,15 @@ with open(ff, 'w') as fO:
                         sheet['B8'] = 'UL'
                     else:
                         sheet['B8'] = ''
-                sheet['B8'].font = Font(name=FSimple,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
+                sheet['B8'].font = Font(name=FSimple, size=12, underline='none', color=DARKBLUE, bold=True,
+                                        italic=False)
 
                 sheet['A9'] = 'MIMO 4x4 for used bands'
                 if S_4x4:
                     sheet['B9'] = 'Supported'
                 else:
                     sheet['B9'] = 'Not Supported'
-                sheet['B9'].font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
+                sheet['B9'].font = Font(name=FBold, size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
 
                 sheet['A10'] = 'CA 7c, 256 QAM, MIMO 4x4'
                 S_Qualcomm = (((S256DL or S256UL) and S_4x4) and S_CA7C)
@@ -1313,75 +1348,84 @@ with open(ff, 'w') as fO:
                     sheet['B10'] = 'Supported'
                 else:
                     sheet['B10'] = 'Not Supported'
-                sheet['B10'].font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
+                sheet['B10'].font = Font(name=FBold, size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
                 RowInSheet = 15
                 sheet.cell(row=RowInSheet, column=1, value='UE access stratum:')
-                sheet.cell(row=RowInSheet, column=2, value= str(UEaccS))
-                RowInSheet=16
+                sheet.cell(row=RowInSheet, column=2, value=str(UEaccS))
+                RowInSheet = 16
                 sheet.cell(row=RowInSheet, column=1, value='UE categories:')
-                sheet.cell(row=RowInSheet, column=2, value= str(UEcats))
-                RowInSheet=18
-                sheet.cell(row=RowInSheet, column=2, value= str(FGILine1))
-                RowInSheet=19
-                sheet.cell(row=RowInSheet, column=2, value= str(FGILine2))
-                RowInSheet=20
-                sheet.cell(row=RowInSheet, column=2, value= str(FGILine3))
-                RowInSheet=21
+                sheet.cell(row=RowInSheet, column=2, value=str(UEcats))
+                RowInSheet = 18
+                sheet.cell(row=RowInSheet, column=2, value=str(FGILine1))
+                RowInSheet = 19
+                sheet.cell(row=RowInSheet, column=2, value=str(FGILine2))
+                RowInSheet = 20
+                sheet.cell(row=RowInSheet, column=2, value=str(FGILine3))
+                RowInSheet = 21
                 sheet.cell(row=RowInSheet, column=1, value='FGI r8 = ')
-                sheet.cell(row=RowInSheet, column=2, value= str(FGI8Txt))
-                RowInSheet=22
+                sheet.cell(row=RowInSheet, column=2, value=str(FGI8Txt))
+                RowInSheet = 22
                 sheet.cell(row=RowInSheet, column=1, value='FGIr9 = ')
-                sheet.cell(row=RowInSheet, column=2, value= str(FGI9Txt))
-                RowInSheet=23
+                sheet.cell(row=RowInSheet, column=2, value=str(FGI9Txt))
+                RowInSheet = 23
                 sheet.cell(row=RowInSheet, column=1, value='FGIr10 = ')
-                sheet.cell(row=RowInSheet, column=2, value= str(FGI10Txt))
-                RowInSheet=24
+                sheet.cell(row=RowInSheet, column=2, value=str(FGI10Txt))
+                RowInSheet = 24
                 sheet.cell(row=RowInSheet, column=1, value='UTRAN capabilities : ')
-                sheet.cell(row=RowInSheet, column=2, value= str(UTRANcapTxt))
-                RowInSheet=25
+                sheet.cell(row=RowInSheet, column=2, value=str(UTRANcapTxt))
+                RowInSheet = 25
                 sheet.cell(row=RowInSheet, column=1, value='GERAN CS capabilities : ')
-                sheet.cell(row=RowInSheet, column=2, value= str(GeranCScapTxt))
-                RowInSheet=26
+                sheet.cell(row=RowInSheet, column=2, value=str(GeranCScapTxt))
+                RowInSheet = 26
                 sheet.cell(row=RowInSheet, column=1, value='GERAN PS capabilities : ')
-                sheet.cell(row=RowInSheet, column=2, value= str(GeranPScapTxt))
+                sheet.cell(row=RowInSheet, column=2, value=str(GeranPScapTxt))
 
-                for i in range(2,28): # Выделяем заголовки строк 2..27 в колонке А
+                for i in range(2, 28):  # Выделяем заголовки строк 2..27 в колонке А
                     i5 = str(i)
-                    cellN = 'A'+i5
-                    sheet[cellN].font = Font(name=FBold, size=12, underline='none', color=BLACK, bold=True, italic=False)
+                    cellN = 'A' + i5
+                    sheet[cellN].font = Font(name=FBold, size=12, underline='none', color=BLACK, bold=True,
+                                             italic=False)
                 # печатаем позже, т.к. не надо выделять под одну гребенку
-                RowInSheet=17
+                RowInSheet = 17
                 sheet.cell(row=RowInSheet, column=1, value='Feature Group Indicators: ')
-                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
+                sheet.cell(row=RowInSheet, column=1).font = Font(name=FBold, size=12, underline='none', color=DARKBLUE,
+                                                                 bold=True, italic=False)
 
-                for i in range(2,8): # Вывод данных в колонке B в строках 2..7 жирным моноширинным шрифтом
+                for i in range(2, 8):  # Вывод данных в колонке B в строках 2..7 жирным моноширинным шрифтом
                     i5 = str(i)
-                    cellN = 'B'+i5
-                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=BLACK, bold= True, italic=False)
+                    cellN = 'B' + i5
+                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=BLACK, bold=True,
+                                             italic=False)
 
-                for i in range(18,28): # Вывод данных в колонке B в строках 18..27 жирным моноширинным шрифтом
+                for i in range(18, 28):  # Вывод данных в колонке B в строках 18..27 жирным моноширинным шрифтом
                     i5 = str(i)
-                    cellN = 'B'+i5
-                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=BLACK, bold= True, italic=False)
+                    cellN = 'B' + i5
+                    sheet[cellN].font = Font(name=FMono, size=10, underline='none', color=BLACK, bold=True,
+                                             italic=False)
 
-                RowInSheet=28
+                RowInSheet = 28
                 sheet.cell(row=RowInSheet, column=1, value='CA Combinations : ')
-                sheet.cell(row=RowInSheet,column=1).font = Font(name=FBold,size=12, underline='none', color=DARKBLUE, bold=True, italic=False)
-                sheet.cell(row=RowInSheet, column=2, value= 'Для TDD расчет ожидаемой скорости выполняется для конфигурации TDD #3 (6DL/3UL таймслотов)')
-                Menu = ['Combination Nbr', 'Band', 'DL,bits', 'UL,bits', 'DL#', 'UL#', 'MIMO', 'DL bandwith', 'UL bandwith',
-                 'DL Throughput', 'UL Throughput']
-                RowInSheet=29
-                for i in range (11):
-                    sheet.cell(row=RowInSheet, column=i+1, value= Menu[i])
-                    sheet.cell(row=RowInSheet,column=i+1).font = Font(name=FBold,size=12, underline='none', color=YELLOW, bold=True, italic=False)
-                    sheet.cell(row=RowInSheet,column=i+1).fill = PatternFill(fill_type='solid', start_color=DARKBLUE, end_color=DARKBLUE)
+                sheet.cell(row=RowInSheet, column=1).font = Font(name=FBold, size=12, underline='none', color=DARKBLUE,
+                                                                 bold=True, italic=False)
+                sheet.cell(row=RowInSheet, column=2,
+                           value='Для TDD расчет ожидаемой скорости выполняется для конфигурации TDD #3 (6DL/3UL таймслотов)')
+                Menu = ['Combination Nbr', 'Band', 'DL,bits', 'UL,bits', 'DL#', 'UL#', 'MIMO', 'DL bandwith',
+                        'UL bandwith',
+                        'DL Throughput', 'UL Throughput']
+                RowInSheet = 29
+                for i in range(11):
+                    sheet.cell(row=RowInSheet, column=i + 1, value=Menu[i])
+                    sheet.cell(row=RowInSheet, column=i + 1).font = Font(name=FBold, size=12, underline='none',
+                                                                         color=YELLOW, bold=True, italic=False)
+                    sheet.cell(row=RowInSheet, column=i + 1).fill = PatternFill(fill_type='solid', start_color=DARKBLUE,
+                                                                                end_color=DARKBLUE)
                 sheet.column_dimensions['A'].width = 32
                 sheet.column_dimensions['B'].width = 31
-                for i5 in ['C','D','E','F','G']: # узкие колонки
+                for i5 in ['C', 'D', 'E', 'F', 'G']:  # узкие колонки
                     sheet.column_dimensions[i5].width = 10
-                for i5 in ['H','I','J','K']: # колонки средней ширины
+                for i5 in ['H', 'I', 'J', 'K']:  # колонки средней ширины
                     sheet.column_dimensions[i5].width = 18
-                CCC = [] # таблица комбинаций для поиска
+                CCC = []  # таблица комбинаций для поиска
                 CCC1 = (str(CCs[0][1]) + str(CCs[0][4]))
                 prevComb = CCs[0][0]
                 ccinComb = 0
@@ -1390,44 +1434,46 @@ with open(ff, 'w') as fO:
                 CCCGreen = False
                 clrCC = C_LightYellow
                 # Шаблон строки СУММы
-                SumComb = ['','','','','','','','','',0,0]
+                SumComb = ['', '', '', '', '', '', '', '', '', 0, 0]
                 #        0      1     2       3       4    5    6     7     8     9      10
                 # CCs = [Comb#, Band, DLbits, ULbits, DL#, UL#, MIMO, DLBW, ULBW, DLTpt, ULTpt]
                 for i in range(Ncarr):
-                    if (CCs[i][0] == prevComb): # продолжение существующей комбинации, накапливаем сумму
-                        ccinComb+=1
+                    if (CCs[i][0] == prevComb):  # продолжение существующей комбинации, накапливаем сумму
+                        ccinComb += 1
                         # Добавляем текущие данные в строку Суммы текущей коминации:
-                        SumComb[9] = SumComb[9]+CCs[i][9]
-                        SumComb[10] = SumComb[10]+CCs[i][10]
-                        CCC1=CCC1+(str(CCs[i][1])+str(CCs[i][4])) # Band + количество смежных несущих в бэнде, например, '31', '72'
+                        SumComb[9] = SumComb[9] + CCs[i][9]
+                        SumComb[10] = SumComb[10] + CCs[i][10]
+                        CCC1 = CCC1 + (str(CCs[i][1]) + str(
+                            CCs[i][4]))  # Band + количество смежных несущих в бэнде, например, '31', '72'
                         CCC.append(CCC1)
-                    else: # начало новой комбинации, старая законилась, надо напечатать ее сумму
-                        CCCinUsed = CheckCCCinUsed(CCC1, UsedPat) # old CCC1 of all cc in combination
-                        CCCGreen = CheckCCCinUsed(CCC1, UsedPatGreen) # for almost used
+                    else:  # начало новой комбинации, старая законилась, надо напечатать ее сумму
+                        CCCinUsed = CheckCCCinUsed(CCC1, UsedPat)  # old CCC1 of all cc in combination
+                        CCCGreen = CheckCCCinUsed(CCC1, UsedPatGreen)  # for almost used
                         CurrComb = CCs[i][0]
-                        CCC1 = (str(CCs[i][1]) + str(CCs[i][4])) # new CCC1 of first cc
+                        CCC1 = (str(CCs[i][1]) + str(CCs[i][4]))  # new CCC1 of first cc
                         # Example: Sum of comb.#3 (4ccs)
                         SumComb[0] = 'SUM of comb.# ' + str(prevComb) + ' (' + str(ccinComb) + 'ccs)'
-                        RowInSheet+=1  # добавляем row для вывода суммы закончившейся комбинации
+                        RowInSheet += 1  # добавляем row для вывода суммы закончившейся комбинации
                         if CCCinUsed and BandsFilter:
                             clrCC = C_LightYellow
                         else:
                             clrCC = C_LBlue
                         if CCCGreen and BandsFilter:
                             clrCC = C_LightGreen
-                        for j in range(11): # вывод суммы закончившейся комбинации
-                            FillCellSum(RowInSheet,j+1,SumComb[j], sheet, clrCC)
+                        for j in range(11):  # вывод суммы закончившейся комбинации
+                            FillCellSum(RowInSheet, j + 1, SumComb[j], sheet, clrCC)
                         ccinComb = 1
                         SumComb[9] = CCs[i][9]
                         SumComb[10] = CCs[i][10]
                     prevComb = CCs[i][0]
-                    RowInSheet+=1  # добавляем row для выводы строки очередной несущей
-                    for j in range(11): # Вывод строки несущей
-                        FillCellNorm(RowInSheet, j+1, CCs[i][j], sheet)
+                    RowInSheet += 1  # добавляем row для выводы строки очередной несущей
+                    for j in range(11):  # Вывод строки несущей
+                        FillCellNorm(RowInSheet, j + 1, CCs[i][j], sheet)
                 # Конец цикла перебора несущих
-                RowInSheet+=1  # добавляем row для вывода суммы последней комбинации
+                RowInSheet += 1  # добавляем row для вывода суммы последней комбинации
                 SumComb[0] = 'SUM of comb.# ' + str(prevComb) + ' (' + str(ccinComb) + 'ccs)'
-                CCC1 = CCC1 + (str(CCs[i][1]) + str(CCs[i][4]))  # Band + количество смежных несущих в бэнде, например, '31', '72'
+                CCC1 = CCC1 + (str(CCs[i][1]) + str(
+                    CCs[i][4]))  # Band + количество смежных несущих в бэнде, например, '31', '72'
                 CCCinUsed = CheckCCCinUsed(CCC1, UsedPat)
                 if CCCinUsed and BandsFilter:
                     clrCC = C_LightYellow
@@ -1435,17 +1481,17 @@ with open(ff, 'w') as fO:
                     clrCC = C_LBlue
                 if CCCGreen and BandsFilter:
                     clrCC = C_LightGreen
-                for j in range(11): # вывод суммы последней комбинации
-                    FillCellSum(RowInSheet, j+1, SumComb[j], sheet, clrCC)
+                for j in range(11):  # вывод суммы последней комбинации
+                    FillCellSum(RowInSheet, j + 1, SumComb[j], sheet, clrCC)
                 logging.info('Вкладка Cap.Info заполнена')
                 book.save(fnX)
                 if os.path.exists(fnX):
                     logging.info('Копия файла успешно сохранена в файл %s', fnX)
                 else:
-                    logging.info('Файл будет сохранён локально, в каталоге программы %s', 'LatestParsed'+ext)
-                    book.save('LatestParsed'+ext)
-                    if os.path.exists('LatestParsed'+ext):
-                        logging.info('Копия файла успешно сохранена локально в файл %s', 'LatestParsed'+ext)
+                    logging.info('Файл будет сохранён локально, в каталоге программы %s', 'LatestParsed' + ext)
+                    book.save('LatestParsed' + ext)
+                    if os.path.exists('LatestParsed' + ext):
+                        logging.info('Копия файла успешно сохранена локально в файл %s', 'LatestParsed' + ext)
                     else:
                         logging.error('Копию файла сохранить не удалось')
     else:
