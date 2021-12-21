@@ -5,6 +5,7 @@
 # Access stratum
 Patt_UEacc = "accessStratumRelease ---"
 Patt_UEacc_eNB = "accessStratumRelease :  ----"
+#---Patt_UEacc_eNB = "accessStratumRelease : ----"
 
 # LTE UE Categories
 Patt_UEcat = "..ue-Category"
@@ -20,12 +21,15 @@ Patt_UEcat_eNB = "ue-Category"
 Patt_SB = ""
 Patt_SBtmf = "bandEUTRA --- 0x"
 # Patt_SBeNB = "bandEUTRA: ---- 0x"
+
 # eRAN13.1 renew:
 Patt_SBeNB = "bandEUTRA :  ---- 0x"
+#---Patt_SBeNB = "bandEUTRA : ---- 0x"
 
 Patt_UtraBands = ""
 Patt_UtraBands_tmf = "..SupportedBandUTRA-FDD ---"
 Patt_UtraBands_eNB = "SupportedBandUTRA-FDD :  ----"
+#---Patt_UtraBands_eNB = "SupportedBandUTRA-FDD : ----"
 
 Patt_GeRANBands = ""
 Patt_GeRANBands_tmf = "..SupportedBandGERAN ---"
