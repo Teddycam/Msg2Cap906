@@ -818,7 +818,7 @@ with open(ff, 'w') as fO:
     print("Трассировка", fn, " содержит ", len(s), " строк", file=fO)
     print("", file=fO)
     ##
-    logger.info('Определим, трассировка декодирована TraceViewer-ом из tmf или самой eNB')
+    logger.info('Определим, трассировка декодирована TraceViewer-ом из tmf или самой eNB') # а есть еще вариант u2000...
     cnt_TMF = 0  # Обнуляем счетчик нахождений паттерна TMF
     cnt_eNB = 0  # Обнуляем счетчик нахождений паттерна eNB
     # Перебираем все строки для сбора бэндов EUTRA
@@ -1181,13 +1181,13 @@ with open(ff, 'w') as fO:
                                                        1] < 49):  # TDD ULDL_config#3 (DL/UL=6/3): DL = 0.6*0.625=0.375 | UL = 0.3*0.625 = 0.1875
                         IsFDD = False
                         CCs[Ncarr - 1][9] = int(
-                            0.375 * CCs[Ncarr - 1][2] * CCs[Ncarr - 1][4] * CCs[Ncarr - 1][6] * CCs[Ncarr - 1][7])
-                        CCs[Ncarr - 1][10] = int(0.1875 * CCs[Ncarr - 1][3] * CCs[Ncarr - 1][5] * CCs[Ncarr - 1][8])
+                            0.375 * CCs[Ncarr - 1][2] * CCs[Ncarr - 1][4] * CCs[Ncarr - 1][6] * CCs[Ncarr - 1][7]) # TDD config#3 DL throughput
+                        CCs[Ncarr - 1][10] = int(0.1875 * CCs[Ncarr - 1][3] * CCs[Ncarr - 1][5] * CCs[Ncarr - 1][8]) # TDD config#3 UL throughput
                     else:  # FDD
                         IsFDD = True
                         CCs[Ncarr - 1][9] = int(
-                            0.625 * CCs[Ncarr - 1][2] * CCs[Ncarr - 1][4] * CCs[Ncarr - 1][6] * CCs[Ncarr - 1][7])
-                        CCs[Ncarr - 1][10] = int(0.625 * CCs[Ncarr - 1][3] * CCs[Ncarr - 1][5] * CCs[Ncarr - 1][8])
+                            0.625 * CCs[Ncarr - 1][2] * CCs[Ncarr - 1][4] * CCs[Ncarr - 1][6] * CCs[Ncarr - 1][7]) # FDD DL throughput
+                        CCs[Ncarr - 1][10] = int(0.625 * CCs[Ncarr - 1][3] * CCs[Ncarr - 1][5] * CCs[Ncarr - 1][8]) # FDD UL throughput
                 endcc = False
         #       print("\n",file = fO)
         print("Найдено ", NCCs, " комбинаций несущих:", file=fO)
@@ -1440,7 +1440,7 @@ with open(ff, 'w') as fO:
                 for i in range(Ncarr):
                     if (CCs[i][0] == prevComb):  # продолжение существующей комбинации, накапливаем сумму
                         ccinComb += 1
-                        # Добавляем текущие данные в строку Суммы текущей коминации:
+                        # Добавляем текущие данные в строку Суммы текущей комбинации:
                         SumComb[9] = SumComb[9] + CCs[i][9]
                         SumComb[10] = SumComb[10] + CCs[i][10]
                         CCC1 = CCC1 + (str(CCs[i][1]) + str(

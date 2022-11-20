@@ -20,11 +20,13 @@ Patt_UEcat_eNB = "ue-Category"
 # Supportet Bands
 Patt_SB = ""
 Patt_SBtmf = "bandEUTRA --- 0x"
-# Patt_SBeNB = "bandEUTRA: ---- 0x"
+#-Patt_SBeNB = "bandEUTRA: ---- 0x"
 
 # eRAN13.1 renew:
 Patt_SBeNB = "bandEUTRA :  ---- 0x"
-#---Patt_SBeNB = "bandEUTRA : ---- 0x"
+
+# eRAN17.1 renew:
+#--Patt_SBeNB = "bandEUTRA : ---- 0x"
 
 Patt_UtraBands = ""
 Patt_UtraBands_tmf = "..SupportedBandUTRA-FDD ---"
